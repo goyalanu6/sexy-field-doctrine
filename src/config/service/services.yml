@@ -1,0 +1,23 @@
+services:
+  section_field.generator.doctrine_config_generator:
+    class: Tardigrades\SectionField\Generator\DoctrineConfigGenerator
+    arguments:
+      - '@section_field.manager.doctrine.field_manager'
+      - '@section_field.manager.doctrine.field_type_manager'
+      - '@section_field.manager.doctrine.section_manager'
+
+  section_field.doctrine.create.section:
+    class: Tardigrades\SectionField\Service\DoctrineSectionCreator
+    arguments:
+      - '@doctrine.orm.entity_manager'
+
+  section_field.doctrine.read.section:
+    class: Tardigrades\SectionField\Service\DoctrineSectionReader
+    arguments:
+      - '@doctrine.orm.entity_manager'
+
+  section_field.doctrine.delete.section:
+    class: Tardigrades\SectionField\Service\DoctrineSectionDeleter
+    arguments:
+      - '@doctrine.orm.entity_manager'
+
