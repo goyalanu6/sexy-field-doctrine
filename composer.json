@@ -1,5 +1,5 @@
 {
-  "name": "dionsnoeijen/sexy-field-doctrine",
+  "name": "tardigrades/sexy-field-doctrine",
   "description": "SexyField Doctrine package, containing config generator, writer, reader and deleter",
   "minimum-stability": "stable",
   "license": "proprietary",
