@@ -15,7 +15,7 @@ namespace Tardigrades\SectionField\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
-use Tardigrades\FieldType\Slug\ValueObject\Slug;
+use Tardigrades\SectionField\ValueObject\Slug;
 use Tardigrades\SectionField\ValueObject\After;
 use Tardigrades\SectionField\ValueObject\Before;
 use Tardigrades\SectionField\ValueObject\CreatedField;
