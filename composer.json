@@ -1,7 +1,7 @@
 {
   "name": "tardigrades/sexy-field-doctrine",
   "description": "SexyField Doctrine package, containing config generator, writer, reader and deleter",
-  "minimum-stability": "stable",
+  "minimum-stability": "dev",
   "license": "MIT",
   "authors": [
     {
@@ -10,8 +10,6 @@
     }
   ],
   "require": {
-    "tardigrades/sexy-field": "dev-master",
-    "tardigrades/sexy-field-entity": "dev-master",
     "doctrine/orm": "^2.5.6",
     "symfony/dependency-injection": "^3.3.2",
     "symfony/yaml": "^3.3.2",
