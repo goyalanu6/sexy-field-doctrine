@@ -21,3 +21,31 @@ services:
     arguments:
       - '@doctrine.orm.entity_manager'
 
+# This is the configuration that assumes you use the sexy-field-doctrine package
+# If you have more generators, or more readers and writers, override this configuration
+# in your own application services configuration.
+  section_field.generator:
+    class: Tardigrades\SectionField\Generator\Generators
+    arguments:
+      -
+        - '@section_field.generator.entity_generator'
+        - '@section_field.generator.doctrine_config_generator'
+
+  section_field.create.section:
+    class: Tardigrades\SectionField\Service\CreateSection
+    arguments:
+      -
+        - '@section_field.doctrine.create.section'
+
+  section_field.read.section:
+    class: Tardigrades\SectionField\Service\ReadSection
+    arguments:
+      -
+        - '@section_field.doctrine.read.section'
+      - '@section_field.manager.doctrine.section_manager'
+
+  section_field.delete.section:
+    class: Tardigrades\SectionField\Service\DeleteSection
+    arguments:
+      -
+        - '@section_field.doctrine.delete.section'
