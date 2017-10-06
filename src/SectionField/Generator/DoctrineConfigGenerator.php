@@ -56,7 +56,7 @@ class DoctrineConfigGenerator extends Generator implements GeneratorInterface
 
         return Writable::create(
             (string) $this->generateXml(),
-            $this->sectionConfig->getNamespace() . '\\config\\xml\\',
+            $this->sectionConfig->getNamespace() . 'Resources\\config\\doctrine\\',
             str_replace('\\', '.', $this->sectionConfig->getNamespace()) .
             '.Entity.' . ucfirst((string) $this->sectionConfig->getHandle()) . '.dcm.xml'
         );
