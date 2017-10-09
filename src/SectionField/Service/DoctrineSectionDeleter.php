@@ -28,6 +28,12 @@ class DoctrineSectionDeleter implements DeleteSectionInterface
 
     public function delete($sectionEntryEntity): bool
     {
-        $this->entityManager->remove($sectionEntryEntity);
+        try {
+            $this->entityManager->remove($sectionEntryEntity);
+            $this->entityManager->flush();
+        } catch (\Exception $exception) {
+            return false;
+        }
+        return true;
     }
 }
