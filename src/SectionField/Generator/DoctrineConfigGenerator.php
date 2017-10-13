@@ -95,7 +95,6 @@ class DoctrineConfigGenerator extends Generator implements GeneratorInterface
                         }
                         $templateDir = TemplateDir::fromString($this->getFieldTypeTemplateDirectory(
                             $field,
-                            'sexy-field-field-types-base',
                             'sexy-field-doctrine'
                         ));
                         $this->templates[$item][] = $generator::generate($field, $templateDir, $options);
