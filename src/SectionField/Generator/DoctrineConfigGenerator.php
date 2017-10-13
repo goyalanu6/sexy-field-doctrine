@@ -70,12 +70,11 @@ class DoctrineConfigGenerator extends Generator implements GeneratorInterface
             $parsed = Yaml::parse(\file_get_contents($yml));
 
             try {
-                $label = $field->getLabel();
                 Assertion::keyExists(
                     $parsed,
                     'generator',
                     'No generator defined for ' .
-                    $label . 'type: ' . $field->getFieldType()->getFullyQualifiedClassName()
+                    $field->getName() . 'type: ' . $field->getFieldType()->getFullyQualifiedClassName()
                 );
 
                 Assertion::keyExists(
