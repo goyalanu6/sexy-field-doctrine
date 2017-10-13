@@ -70,9 +70,7 @@ class DoctrineConfigGenerator extends Generator implements GeneratorInterface
             $parsed = Yaml::parse(\file_get_contents($yml));
 
             try {
-                $label = !empty($field->getFieldTranslations()[0]) ?
-                    $field->getFieldTranslations()[0]->getLabel() :
-                    'Opposing field';
+                $label = $field->getLabel();
                 Assertion::keyExists(
                     $parsed,
                     'generator',
