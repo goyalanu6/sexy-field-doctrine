@@ -13,12 +13,12 @@ declare (strict_types=1);
 
 namespace Tardigrades\SectionField\Generator;
 
-use Assert\Assertion;
+
 use ReflectionClass;
-use Symfony\Component\Yaml\Yaml;
 use Tardigrades\Entity\FieldInterface;
 use Tardigrades\Entity\SectionInterface;
 use Tardigrades\FieldType\ValueObject\Template;
+use Tardigrades\FieldType\ValueObject\TemplateDir;
 use Tardigrades\SectionField\Generator\Loader\TemplateLoader;
 use Tardigrades\SectionField\Generator\Writer\Writable;
 use Tardigrades\SectionField\ValueObject\SectionConfig;
@@ -66,31 +66,13 @@ class DoctrineConfigGenerator extends Generator implements GeneratorInterface
         /** @var FieldInterface $field */
         foreach ($fields as $field) {
 
-            $yml = $field->getFieldType()->getInstance()->directory() . '/config/config.yml';
-            $parsed = Yaml::parse(\file_get_contents($yml));
-
-            try {
-                Assertion::keyExists(
-                    $parsed,
-                    'generator',
-                    'No generator defined for ' .
-                    $field->getName() . 'type: ' . $field->getFieldType()->getFullyQualifiedClassName()
-                );
-
-                Assertion::keyExists(
-                    $parsed['generator'],
-                    self::GENERATE_FOR,
-                    'Nothing to do for this generator: ' . self::GENERATE_FOR
-                );
-            } catch (\Exception $exception) {
-                $this->buildMessages[] = $exception->getMessage();
-            }
+            $parsed = $this->getFieldTypeGeneratorConfig($field, self::GENERATE_FOR);
 
             /**
              * @var string $item
              * @var \Tardigrades\FieldType\Generator\GeneratorInterface $generator
              */
-            foreach ($parsed['generator'][self::GENERATE_FOR] as $item=>$generator) {
+            foreach ($parsed[self::GENERATE_FOR] as $item=>$generator) {
                 if (!key_exists($item, $this->templates)) {
                     $this->templates[$item] = [];
                 }
@@ -104,14 +86,19 @@ class DoctrineConfigGenerator extends Generator implements GeneratorInterface
                     try {
                         $reflector = new ReflectionClass($generator);
                         $method = $reflector->getMethod('generate');
-                        $options = null;
+                        $options = [];
                         if (isset($method->getParameters()[1])) {
                             $options = [
                                 'sectionManager' => $this->sectionManager,
                                 'sectionConfig' => $this->sectionConfig
                             ];
                         }
-                        $this->templates[$item][] = $generator::generate($field, $options);
+                        $templateDir = TemplateDir::fromString($this->getFieldTypeTemplateDirectory(
+                            $field,
+                            'sexy-field-field-types-base',
+                            'sexy-field-entity'
+                        ));
+                        $this->templates[$item][] = $generator::generate($field, $templateDir, $options);
                     } catch (\Exception $exception) {
                         $this->buildMessages[] = $exception->getMessage();
                     }
