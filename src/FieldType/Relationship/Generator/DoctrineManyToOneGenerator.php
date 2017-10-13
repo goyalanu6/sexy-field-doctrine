@@ -17,6 +17,7 @@ use Tardigrades\Entity\FieldInterface;
 use Tardigrades\Entity\SectionInterface;
 use Tardigrades\FieldType\Generator\GeneratorInterface;
 use Tardigrades\FieldType\ValueObject\Template;
+use Tardigrades\FieldType\ValueObject\TemplateDir;
 use Tardigrades\SectionField\Generator\Loader\TemplateLoader;
 use Tardigrades\SectionField\Service\SectionManagerInterface;
 use Tardigrades\SectionField\ValueObject\Handle;
@@ -25,7 +26,7 @@ class DoctrineManyToOneGenerator implements GeneratorInterface
 {
     const KIND = 'many-to-one';
 
-    public static function generate(FieldInterface $field, ...$options): Template
+    public static function generate(FieldInterface $field, TemplateDir $templateDir, ...$options): Template
     {
         $fieldConfig = $field->getConfig()->toArray();
 
@@ -41,7 +42,7 @@ class DoctrineManyToOneGenerator implements GeneratorInterface
 
             return Template::create(
                 TemplateLoader::load(
-                    __DIR__ . '/../GeneratorTemplate/doctrine.manytoone.xml.php', [
+                    (string) $templateDir . '/GeneratorTemplate/doctrine.manytoone.xml.php', [
                         'toHandle' => $fieldConfig['field']['to'] . $toVersion,
                         'toFullyQualifiedClassName' => $to->getConfig()->getFullyQualifiedClassName()
                     ]

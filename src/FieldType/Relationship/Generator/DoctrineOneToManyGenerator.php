@@ -18,6 +18,7 @@ use Tardigrades\Entity\FieldInterface;
 use Tardigrades\Entity\SectionInterface;
 use Tardigrades\FieldType\Generator\GeneratorInterface;
 use Tardigrades\FieldType\ValueObject\Template;
+use Tardigrades\FieldType\ValueObject\TemplateDir;
 use Tardigrades\SectionField\Generator\Loader\TemplateLoader;
 use Tardigrades\SectionField\Service\SectionManagerInterface;
 use Tardigrades\SectionField\ValueObject\Handle;
@@ -27,7 +28,7 @@ class DoctrineOneToManyGenerator implements GeneratorInterface
 {
     const KIND = 'one-to-many';
 
-    public static function generate(FieldInterface $field, ...$options): Template
+    public static function generate(FieldInterface $field, TemplateDir $templateDir, ...$options): Template
     {
         $fieldConfig = $field->getConfig()->toArray();
 
@@ -50,7 +51,7 @@ class DoctrineOneToManyGenerator implements GeneratorInterface
 
             return Template::create(
                 TemplateLoader::load(
-                    __DIR__ . '/../GeneratorTemplate/doctrine.onetomany.xml.php', [
+                    (string) $templateDir . '/GeneratorTemplate/doctrine.onetomany.xml.php', [
                         'toPluralHandle' => Inflector::pluralize($fieldConfig['field']['to']) . $toVersion,
                         'toFullyQualifiedClassName' => $to->getConfig()->getFullyQualifiedClassName(),
                         'fromHandle' => (string) $handle, // Don't version this one, it's mapped to the entity method.
