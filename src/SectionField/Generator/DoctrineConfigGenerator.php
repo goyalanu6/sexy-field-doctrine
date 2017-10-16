@@ -56,7 +56,7 @@ class DoctrineConfigGenerator extends Generator implements GeneratorInterface
 
         return Writable::create(
             (string) $this->generateXml(),
-            $this->sectionConfig->getNamespace() . 'Resources\\config\\doctrine\\',
+            $this->sectionConfig->getNamespace() . '\\Resources\\config\\doctrine\\',
             ucfirst((string) $this->sectionConfig->getHandle()) . '.orm.xml'
         );
     }
