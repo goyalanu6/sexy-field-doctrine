@@ -1,5 +1,5 @@
 <?php if ($type === 'unidirectional') { ?>
-<many-to-many field="<?php echo $toPluralHandle; ?>" target-entity="<?php echo $toFullyQualifiedClassName; ?>">
+<many-to-many field="<?php echo $toPluralHandle; ?>" target-entity="<?php echo $toFullyQualifiedClassName; ?>" inversed-by="<?php echo $fromPluralHandle; ?>">
     <cascade>
         <cascade-all/>
     </cascade>
