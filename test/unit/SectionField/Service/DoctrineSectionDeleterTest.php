@@ -40,7 +40,7 @@ final class DoctrineSectionDeleterTest extends TestCase
      */
     public function it_deletes()
     {
-        $deleted = 'I am being deleted';
+        $deleted = Mockery::mock('alias:Tardigrades\SectionField\Generator\CommonSectionInterface')->makePartial();
 
         $this->entityManager->shouldReceive('remove')
             ->once()
@@ -61,7 +61,7 @@ final class DoctrineSectionDeleterTest extends TestCase
      */
     public function it_does_not_delete()
     {
-        $deleted = 'I am not being deleted';
+        $deleted = Mockery::mock('alias:Tardigrades\SectionField\Generator\CommonSectionInterface')->makePartial();
 
         $this->entityManager->shouldReceive('remove')
             ->once()
