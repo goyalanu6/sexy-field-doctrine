@@ -10,10 +10,8 @@ use Tardigrades\Entity\Field;
 use Tardigrades\Entity\SectionInterface;
 use Tardigrades\FieldType\ValueObject\Template;
 use Tardigrades\FieldType\ValueObject\TemplateDir;
-use Tardigrades\SectionField\Generator\Loader\TemplateNotFoundException;
 use Tardigrades\SectionField\Service\SectionManagerInterface;
 use Tardigrades\SectionField\ValueObject\FieldConfig;
-use Tardigrades\SectionField\ValueObject\Handle;
 use Tardigrades\SectionField\ValueObject\SectionConfig;
 use Tardigrades\SectionField\ValueObject\Version;
 
