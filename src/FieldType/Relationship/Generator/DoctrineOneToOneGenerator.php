@@ -62,7 +62,7 @@ class DoctrineOneToOneGenerator implements GeneratorInterface
 
             return Template::create(
                 TemplateLoader::load(
-                    (string) $templateDir . '/GeneratorTemplate/doctrine.onetooone.xml.php', [
+                    (string) $templateDir . '/GeneratorTemplate/doctrine.onetoone.xml.php', [
                         'type' => $fieldConfig['field']['type'],
                         'toPluralHandle' => Inflector::pluralize($fieldConfig['field']['to']) . $toVersion,
                         'toFullyQualifiedClassName' => $to->getConfig()->getFullyQualifiedClassName(),

@@ -68,7 +68,7 @@ final class DoctrineOneToOneGeneratorTest extends TestCase
      * @test
      * @covers ::generate
      */
-    public function it_should_generate_with_correct_kind_but_throws_exception_because_template_cant_be_found()
+    public function it_should_generate_with_correct_kind()
     {
         $fieldArrayThing = [
             'field' =>
@@ -139,13 +139,13 @@ final class DoctrineOneToOneGeneratorTest extends TestCase
                 ]
             ])
         ];
-        $this->expectException(TemplateNotFoundException::class);
-        $this->expectExceptionMessage('template not found');
 
         $generated = DoctrineOneToOneGenerator::generate(
             $field,
-            TemplateDir::fromString(''),
+            TemplateDir::fromString('src/FieldType/Relationship'),
             $options
         );
+
+        $this->assertInstanceOf(Template::class, $generated);
     }
 }
