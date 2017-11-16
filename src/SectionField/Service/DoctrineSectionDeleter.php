@@ -14,6 +14,7 @@ declare (strict_types=1);
 namespace Tardigrades\SectionField\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Tardigrades\SectionField\Generator\CommonSectionInterface;
 
 class DoctrineSectionDeleter implements DeleteSectionInterface
 {
@@ -26,7 +27,7 @@ class DoctrineSectionDeleter implements DeleteSectionInterface
         $this->entityManager = $entityManager;
     }
 
-    public function delete($sectionEntryEntity): bool
+    public function delete(CommonSectionInterface $sectionEntryEntity): bool
     {
         try {
             $this->entityManager->remove($sectionEntryEntity);
