@@ -25,7 +25,7 @@ final class DoctrineManyToManyGeneratorTest extends TestCase
 
     /**
      * @test
-     * @covers ::generate
+     * @covers DoctrineManyToManyGenerator::generate
      */
     public function it_generates_an_empty_template_with_wrong_kind()
     {
@@ -60,7 +60,7 @@ final class DoctrineManyToManyGeneratorTest extends TestCase
 
     /**
      * @test
-     * @covers ::generate
+     * @covers DoctrineManyToManyGenerator::generate
      */
     public function it_generates_a_proper_template_too()
     {
