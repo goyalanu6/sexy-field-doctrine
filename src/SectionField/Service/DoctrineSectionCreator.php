@@ -16,6 +16,7 @@ namespace Tardigrades\SectionField\Service;
 use Doctrine\Common\Util\Inflector;
 use Doctrine\ORM\EntityManagerInterface;
 use Tardigrades\Helper\FullyQualifiedClassNameConverter;
+use Tardigrades\SectionField\Generator\CommonSectionInterface;
 use Tardigrades\SectionField\ValueObject\JitRelationship;
 
 class DoctrineSectionCreator implements CreateSectionInterface
@@ -29,7 +30,7 @@ class DoctrineSectionCreator implements CreateSectionInterface
         $this->entityManager = $entityManager;
     }
 
-    public function save($data, array $jitRelationships = null)
+    public function save(CommonSectionInterface $data, array $jitRelationships = null)
     {
         $this->setReferencesForJitRelationships($data, $jitRelationships);
         $this->entityManager->persist($data);
