@@ -13,7 +13,6 @@ declare (strict_types=1);
 
 namespace Tardigrades\SectionField\Generator;
 
-
 use ReflectionClass;
 use Tardigrades\Entity\FieldInterface;
 use Tardigrades\Entity\SectionInterface;
@@ -76,7 +75,7 @@ class DoctrineConfigGenerator extends Generator implements GeneratorInterface
                 if (!key_exists($item, $this->templates)) {
                     $this->templates[$item] = [];
                 }
-                if (class_exists($generator)) {
+                if (class_exists(get_class($generator))) {
                     $interfaces = class_implements($generator);
                 } else {
                     $this->buildMessages[] = 'Generators ' . get_class($generator) . ': Generators not found.';
