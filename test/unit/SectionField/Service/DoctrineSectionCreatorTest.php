@@ -45,7 +45,7 @@ final class DoctrineSectionCreatorTest extends TestCase
     {
         $className = FullyQualifiedClassName::fromString('I am qualified! In a Class!');
         $id = Id::fromInt(2222);
-        $data = 'data, loads of data!';
+        $data = Mockery::mock('alias:Tardigrades\SectionField\Generator\CommonSectionInterface')->makePartial();
 
         $jit = Mockery::mock(JitRelationship::fromFullyQualifiedClassNameAndId($className,$id))->makePartial();
         $jit->shouldReceive('getFullyQualifiedClassName')->andReturn($className);
