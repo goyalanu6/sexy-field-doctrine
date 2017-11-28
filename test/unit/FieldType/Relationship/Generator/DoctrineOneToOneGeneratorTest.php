@@ -36,7 +36,8 @@ final class DoctrineOneToOneGeneratorTest extends TestCase
                 [
                     'name' => 'iets',
                     'handle' => 'niets',
-                    'kind' => 'wrong kind'
+                    'kind' => 'wrong kind',
+                    'relationship-type' => 'owningSide'
                 ]
         ];
         $field = $field->setConfig($fieldArrayThing);
@@ -74,6 +75,7 @@ final class DoctrineOneToOneGeneratorTest extends TestCase
                     'name' => 'iets',
                     'handle' => 'some handle',
                     'kind' => DoctrineOneToOneGenerator::KIND,
+                    'relationship-type' => 'inverseSide',
                     'from' => 'me',
                     'to' => 'you',
                     'type' => 'not my type'
@@ -140,10 +142,18 @@ final class DoctrineOneToOneGeneratorTest extends TestCase
 
         $generated = DoctrineOneToOneGenerator::generate(
             $field,
-            TemplateDir::fromString('src/FieldType/Relationship'),
+            TemplateDir::fromString(__DIR__ . '/../../../../../src/FieldType/Relationship'),
             $options
         );
 
         $this->assertInstanceOf(Template::class, $generated);
+
+        $expected = <<<EOT
+<one-to-one field="you_333" target-entity="namespace\Entity\Handle" mapped-by="some handle_37" />
+
+
+EOT;
+
+        $this->assertEquals($expected, (string)$generated);
     }
 }

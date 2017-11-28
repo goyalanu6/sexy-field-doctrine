@@ -39,7 +39,6 @@ class DoctrineManyToManyGenerator implements GeneratorInterface
         $sectionConfig = $options[0]['sectionConfig'];
 
         if ($fieldConfig['field']['kind'] === self::KIND) {
-
             $handle = $sectionConfig->getHandle();
             /** @var SectionInterface $from */
             $from = $sectionManager->readByHandle($handle);
@@ -52,7 +51,8 @@ class DoctrineManyToManyGenerator implements GeneratorInterface
 
             return Template::create(
                 TemplateLoader::load(
-                    (string) $templateDir . '/GeneratorTemplate/doctrine.manytomany.xml.php', [
+                    (string) $templateDir . '/GeneratorTemplate/doctrine.manytomany.xml.php',
+                    [
                         'type' => $fieldConfig['field']['relationship-type'],
                         'toPluralHandle' => Inflector::pluralize(
                             $fieldConfig['field']['to']

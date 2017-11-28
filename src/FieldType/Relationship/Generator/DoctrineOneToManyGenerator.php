@@ -39,7 +39,6 @@ class DoctrineOneToManyGenerator implements GeneratorInterface
         $sectionConfig = $options[0]['sectionConfig'];
 
         if ($fieldConfig['field']['kind'] === self::KIND) {
-
             $handle = $sectionConfig->getHandle();
             $from = $sectionManager->readByHandle($handle);
 
@@ -51,7 +50,8 @@ class DoctrineOneToManyGenerator implements GeneratorInterface
 
             return Template::create(
                 TemplateLoader::load(
-                    (string) $templateDir . '/GeneratorTemplate/doctrine.onetomany.xml.php', [
+                    (string) $templateDir . '/GeneratorTemplate/doctrine.onetomany.xml.php',
+                    [
                         'toPluralHandle' => Inflector::pluralize($fieldConfig['field']['to']) . $toVersion,
                         'toFullyQualifiedClassName' => $to->getConfig()->getFullyQualifiedClassName(),
                         'fromHandle' => (string) $handle, // Don't version this one, it's mapped to the entity method.

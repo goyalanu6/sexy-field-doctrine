@@ -50,9 +50,9 @@ final class DoctrineManyToManyGeneratorTest extends TestCase
                 ]
             ]
         ];
-        $generated = DoctrineOneToOneGenerator::generate(
+        $generated = DoctrineManyToManyGenerator::generate(
             $field,
-            TemplateDir::fromString(''),
+            TemplateDir::fromString('src/FieldType/Relationship'),
             $options
         );
         $this->assertEquals(Template::create(''), $generated);
@@ -143,6 +143,7 @@ final class DoctrineManyToManyGeneratorTest extends TestCase
         $this->assertInstanceOf(Template::class, $generated);
         $this->assertStringStartsWith(
             '<many-to-many field="thats_123" target-entity="nameFromSpace\Entity\ToBeMapped" inversed-by="mappers_37">',
-            (string) $generated);
+            (string) $generated
+        );
     }
 }

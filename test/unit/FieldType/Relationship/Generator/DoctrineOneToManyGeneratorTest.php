@@ -50,9 +50,9 @@ class DoctrineOneToManyGeneratorTest extends TestCase
                 ]
             ]
         ];
-        $generated = DoctrineOneToOneGenerator::generate(
+        $generated = DoctrineOneToManyGenerator::generate(
             $field,
-            TemplateDir::fromString(''),
+            TemplateDir::fromString('src/FieldType/Relationship'),
             $options
         );
         $this->assertEquals(Template::create(''), $generated);
@@ -140,9 +140,12 @@ class DoctrineOneToManyGeneratorTest extends TestCase
         );
         $this->assertNotEmpty($generated);
         $this->assertInstanceOf(Template::class, $generated);
-        $this->assertEquals(
-            (string)$generated,
-            '<one-to-many field="thats_666" target-entity="nameFromSpace\Entity\ToBeMapped" mapped-by="mapper" />
-');
+
+        $expected = <<<EOT
+<one-to-many field="thats_666" target-entity="nameFromSpace\Entity\ToBeMapped" mapped-by="mapper" />
+
+EOT;
+
+        $this->assertEquals($expected, (string)$generated);
     }
 }

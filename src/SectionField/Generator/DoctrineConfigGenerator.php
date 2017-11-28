@@ -64,14 +64,13 @@ class DoctrineConfigGenerator extends Generator implements GeneratorInterface
     {
         /** @var FieldInterface $field */
         foreach ($fields as $field) {
-
             $parsed = $this->getFieldTypeGeneratorConfig($field, self::GENERATE_FOR);
 
             /**
              * @var string $item
              * @var \Tardigrades\FieldType\Generator\GeneratorInterface $generator
              */
-            foreach ($parsed[self::GENERATE_FOR] as $item=>$generator) {
+            foreach ($parsed[self::GENERATE_FOR] as $item => $generator) {
                 if (!key_exists($item, $this->templates)) {
                     $this->templates[$item] = [];
                 }
@@ -118,7 +117,7 @@ class DoctrineConfigGenerator extends Generator implements GeneratorInterface
     {
         $asString = (string) TemplateLoader::load(__DIR__ . '/GeneratorTemplate/doctrine.config.xml.template');
 
-        foreach ($this->templates as $templateVariable=>$templates) {
+        foreach ($this->templates as $templateVariable => $templates) {
             $asString = str_replace(
                 '{{ ' . $templateVariable . ' }}',
                 $this->combine($templates),

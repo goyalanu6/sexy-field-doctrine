@@ -80,7 +80,7 @@ final class DoctrineSectionReaderTest extends TestCase
 
         $this->queryBuilder->shouldReceive('from')
             ->once()
-            ->with('','');
+            ->with('', '');
 
         $this->queryBuilder->shouldReceive('getQuery')
             ->once()
@@ -138,7 +138,7 @@ final class DoctrineSectionReaderTest extends TestCase
 
         $this->queryBuilder->shouldReceive('from')
             ->once()
-            ->with('Section One','Section One');
+            ->with('Section One', 'Section One');
 
         $this->queryBuilder->shouldReceive('where')
             ->times(4);
