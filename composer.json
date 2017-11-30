@@ -25,8 +25,9 @@
   "require-dev": {
     "tardigrades/sexy-field": "dev-master",
     "phpunit/phpunit": "^6.1",
-    "squizlabs/PHP_CodeSniffer": "^2.8",
+    "squizlabs/PHP_CodeSniffer": "^3.1",
     "mockery/mockery": "^0.9.9",
-    "mikey179/vfsStream": "^1.6"
+    "mikey179/vfsStream": "^1.6",
+    "phing/phing": "^2.16"
   }
 }
