@@ -149,7 +149,7 @@ final class DoctrineOneToOneGeneratorTest extends TestCase
         $this->assertInstanceOf(Template::class, $generated);
 
         $expected = <<<EOT
-<one-to-one field="you_333" target-entity="namespace\Entity\Handle" mapped-by="some handle_37" />
+<one-to-one field="you_333" target-entity="namespace\Entity\Handle" mapped-by="niets_37" />
 
 
 EOT;
