@@ -60,7 +60,7 @@ class DoctrineOneToOneGenerator implements GeneratorInterface
                     [
                         'type' => $fieldConfig['field']['relationship-type'],
                         'toFullyQualifiedClassName' => $to->getConfig()->getFullyQualifiedClassName(),
-                        'fromHandle' => $fieldConfig['field']['handle'] . $fromVersion,
+                        'fromHandle' => $sectionConfig->getHandle() . $fromVersion,
                         'fromFullyQualifiedClassName' => $sectionConfig->getFullyQualifiedClassName(),
                         'toHandle' => $fieldConfig['field']['to'] . $toVersion
                     ]
