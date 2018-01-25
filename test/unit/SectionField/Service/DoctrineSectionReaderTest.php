@@ -93,6 +93,56 @@ final class DoctrineSectionReaderTest extends TestCase
      * @test
      * @covers ::read
      */
+    public function it_fails_with_no_results()
+    {
+        $optionData = [
+            'section' => [
+                '' => ''
+            ]
+        ];
+
+        $configData = [
+            'section' => [
+                'name' => 'nameTo',
+                'handle' => 'handle',
+                'fields' => ['a' => 'b'],
+                'default' => 'default',
+                'namespace' => 'namespace'
+            ]
+        ];
+
+        $reader = new DoctrineSectionReader($this->entityManager);
+        $sectionConfig = SectionConfig::fromArray($configData);
+        $readOptions = ReadOptions::fromArray($optionData);
+
+        $query = Mockery::mock('alias:Query')->makePartial()
+            ->shouldReceive('getResult')->andReturn([])->getMock();
+
+        $this->entityManager->shouldReceive('createQueryBuilder')
+            ->once()
+            ->andReturn($this->queryBuilder);
+
+        $this->queryBuilder->shouldReceive('select')
+            ->once()
+            ->with('');
+
+        $this->queryBuilder->shouldReceive('from')
+            ->once()
+            ->with('', '');
+
+        $this->queryBuilder->shouldReceive('getQuery')
+            ->once()
+            ->andReturn($query);
+
+        $this->expectException(EntryNotFoundException::class);
+
+        $reader->read($readOptions, $sectionConfig);
+    }
+
+    /**
+     * @test
+     * @covers ::read
+     */
     public function it_reads_everything()
     {
         $date = new \DateTime('2017-10-21T15:03');

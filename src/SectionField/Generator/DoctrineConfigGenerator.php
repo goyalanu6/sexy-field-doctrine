@@ -77,7 +77,7 @@ class DoctrineConfigGenerator extends Generator implements GeneratorInterface
                 if (class_exists($generator)) {
                     $interfaces = class_implements($generator);
                 } else {
-                    $this->buildMessages[] = 'Generators ' . get_class($generator) . ': Generators not found.';
+                    $this->buildMessages[] = 'Generators ' . $generator . ': Generators not found.';
                     break;
                 }
                 if (key($interfaces) === \Tardigrades\FieldType\Generator\GeneratorInterface::class) {
