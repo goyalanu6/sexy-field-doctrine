@@ -131,6 +131,68 @@ final class DoctrineConfigGeneratorTest extends TestCase
      * @covers ::generateElements
      * @covers ::generateBySection
      */
+    public function it_should_fail_generating_with_a_nonexistent_class()
+    {
+        $sectionOne = $this->givenASectionWithName('One');
+
+        $fieldtypeConfigDoctrine = FieldTypeGeneratorConfig::fromArray(
+            [
+                'doctrine' => [
+                    'unknownKey' => "fakeClass"
+                ]
+            ]
+        );
+
+        $fieldType = Mockery::mock(FieldTypeInterface::class);
+        $fieldType->shouldReceive('getFieldTypeGeneratorConfig')
+            ->once()
+            ->andReturn($fieldtypeConfigDoctrine);
+        $fieldType->shouldReceive('getFullyQualifiedClassName')
+            ->andReturn(FullyQualifiedClassName::fromString('\My\Namespace\Field'));
+        $fieldType->shouldReceive('getType')->andReturn(Type::fromString('EmailType'));
+        $fieldType->shouldReceive('directory')->andReturn(__DIR__ . '/../../../../src/FieldType/Relationship');
+
+        $fieldOne = $this->givenAFieldWithNameKindAndTo('One', 'one-to-one', 'Two');
+
+        $relationships = [
+            'sectionOne' => [
+                'fieldOne' => [
+                    'kind' => 'one-to-one',
+                    'to' => 'sectionTwo',
+                    'from' => 'sectionOne',
+                    'fullyQualifiedClassName' => FullyQualifiedClassName::fromString(
+                        '\\My\\Namespace\\FieldTypeClassOne'
+                    ),
+                    'relationship-type' => 'unidirectional'
+                ]
+            ]
+        ];
+
+        $this->fieldManager->shouldReceive('readByHandles')
+            ->once()
+            ->andReturn([$fieldOne]);
+
+        $this->sectionManager->shouldReceive('getRelationshipsOfAll')
+            ->once()
+            ->andReturn($relationships);
+
+        $this->container->shouldReceive('get')
+            ->once()
+            ->andReturn($fieldType);
+
+        $writable = $this->generator->generateBySection($sectionOne);
+        $this->assertInstanceOf(Writable::class, $writable);
+        $this->assertSame("My\\Namespace\\Resources\\config\\doctrine\\", $writable->getNamespace());
+        $this->assertSame("SectionOne.orm.xml", $writable->getFilename());
+        $this->assertSame($this->givenXmlResult(), $writable->getTemplate());
+        $this->assertCount(1, $this->generator->getBuildMessages());
+    }
+
+    /**
+     * @test
+     * @covers ::generateElements
+     * @covers ::generateBySection
+     */
     public function it_should_generate_section_and_skip_to_catch_block()
     {
         $sectionOne = $this->givenASectionWithName('One');
