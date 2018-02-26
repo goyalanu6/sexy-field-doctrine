@@ -37,6 +37,17 @@ class DoctrineSectionCreator implements CreateSectionInterface
         $this->entityManager->flush();
     }
 
+    public function persist(CommonSectionInterface $data, array $jitRelationships = null)
+    {
+        $this->setReferencesForJitRelationships($data, $jitRelationships);
+        $this->entityManager->persist($data);
+    }
+
+    public function flush()
+    {
+        $this->entityManager->flush();
+    }
+
     /**
      * Jit relationships are introduced due to the inability of symfony forms
      * to update a relationship by it's ID. It requires you to use the EntityType

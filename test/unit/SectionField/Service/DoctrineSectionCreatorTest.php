@@ -66,4 +66,48 @@ final class DoctrineSectionCreatorTest extends TestCase
 
         $section->save($data, [$jit]);
     }
+
+    /**
+     * @test
+     * @covers ::persist
+     */
+    public function it_persists()
+    {
+        $className = FullyQualifiedClassName::fromString('I am qualified! In a Class!');
+        $id = Id::fromInt(2222);
+        $data = Mockery::mock('alias:Tardigrades\SectionField\Generator\CommonSectionInterface')->makePartial();
+
+        $jit = Mockery::mock(JitRelationship::fromFullyQualifiedClassNameAndId($className, $id))->makePartial();
+        $jit->shouldReceive('getFullyQualifiedClassName')->andReturn($className);
+        $jit->shouldReceive('getId')->andReturn($id);
+
+        $section = new DoctrineSectionCreator($this->entityManager);
+
+        $this->entityManager->shouldReceive('getReference')
+            ->once()
+            ->with((string) $className, $id->toInt());
+
+        $this->entityManager->shouldReceive('persist')
+            ->once()
+            ->with($data);
+
+        $this->entityManager->shouldReceive('flush')
+            ->never();
+
+        $section->persist($data, [$jit]);
+    }
+
+    /**
+     * @test
+     * @covers ::flush
+     */
+    public function it_flushes()
+    {
+        $section = new DoctrineSectionCreator($this->entityManager);
+
+        $this->entityManager->shouldReceive('flush')
+            ->once();
+
+        $section->flush();
+    }
 }
