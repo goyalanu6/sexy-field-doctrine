@@ -97,7 +97,8 @@ final class DoctrineConfigGeneratorTest extends TestCase
                     'fullyQualifiedClassName' => FullyQualifiedClassName::fromString(
                         '\\My\\Namespace\\FieldTypeClassOne'
                     ),
-                    'relationship-type' => 'unidirectional'
+                    'relationship-type' => 'unidirectional',
+                    'owner' => true
                 ]
             ]
         ];
@@ -119,10 +120,32 @@ final class DoctrineConfigGeneratorTest extends TestCase
             ->andReturn($fieldType);
 
         $writable = $this->generator->generateBySection($sectionOne);
+
+        //@codingStandardsIgnoreStart
+        $expected = <<<'EOT'
+<?xml version="1.0"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+  <entity name="My\Namespace\Entity\SectionOne" table="sectionOne">
+    <lifecycle-callbacks>
+      <lifecycle-callback type="prePersist" method="onPrePersist"/>
+      <lifecycle-callback type="preUpdate" method="onPreUpdate"/>
+    </lifecycle-callbacks>
+    <id name="id" type="integer">
+      <generator strategy="AUTO"/>
+    </id>
+    <one-to-one field="sectionTwo" target-entity="My\Namespace\Entity\SectionOne">
+      <join-column name="sectionTwo_id" referenced-column-name="id"/>
+    </one-to-one>
+  </entity>
+</doctrine-mapping>
+
+EOT;
+        //@codingStandardsIgnoreEnd
+
         $this->assertInstanceOf(Writable::class, $writable);
         $this->assertSame("My\\Namespace\\Resources\\config\\doctrine\\", $writable->getNamespace());
         $this->assertSame("SectionOne.orm.xml", $writable->getFilename());
-        $this->assertSame($this->givenXmlResult(), $writable->getTemplate());
+        $this->assertSame($expected, $writable->getTemplate());
         $this->assertCount(0, $this->generator->getBuildMessages());
     }
 
@@ -163,7 +186,8 @@ final class DoctrineConfigGeneratorTest extends TestCase
                     'fullyQualifiedClassName' => FullyQualifiedClassName::fromString(
                         '\\My\\Namespace\\FieldTypeClassOne'
                     ),
-                    'relationship-type' => 'unidirectional'
+                    'relationship-type' => 'unidirectional',
+                    'owner' => true
                 ]
             ]
         ];
@@ -224,7 +248,8 @@ final class DoctrineConfigGeneratorTest extends TestCase
                     'fullyQualifiedClassName' => FullyQualifiedClassName::fromString(
                         '\\My\\Namespace\\FieldTypeClassOne'
                     ),
-                    'relationship-type' => 'unidirectional'
+                    'relationship-type' => 'unidirectional',
+                    'owner' => true
                 ]
             ]
         ];
@@ -295,7 +320,8 @@ final class DoctrineConfigGeneratorTest extends TestCase
                 'handle' => $fieldHandle,
                 'kind' => $kind,
                 'to' => 'section' . $to,
-                'relationship-type' => 'unidirectional'
+                'relationship-type' => 'unidirectional',
+                'owner' => true
             ]
         ]);
 
