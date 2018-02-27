@@ -25,13 +25,7 @@ use Tardigrades\SectionField\ValueObject\SectionConfig;
 class DoctrineConfigGenerator extends Generator implements GeneratorInterface
 {
     /** @var array */
-    private $templates = [
-        'fields' => [],
-        'manyToOne' => [],
-        'oneToMany' => [],
-        'oneToOne' => [],
-        'manyToMany' => []
-    ];
+    private $templates;
 
     /** @var SectionInterface */
     private $section;
@@ -47,6 +41,8 @@ class DoctrineConfigGenerator extends Generator implements GeneratorInterface
 
         $this->section = $section;
         $this->sectionConfig = $section->getConfig();
+
+        $this->initializeTemplates();
 
         $fields = $this->fieldManager->readByHandles($this->sectionConfig->getFields());
         $fields = $this->addOpposingRelationships($section, $fields);
@@ -102,6 +98,17 @@ class DoctrineConfigGenerator extends Generator implements GeneratorInterface
                 }
             }
         }
+    }
+
+    private function initializeTemplates(): void
+    {
+        $this->templates = [
+            'fields' => [],
+            'manyToOne' => [],
+            'oneToMany' => [],
+            'oneToOne' => [],
+            'manyToMany' => []
+        ];
     }
 
     private function combine(array $templates): string
