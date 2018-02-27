@@ -43,6 +43,7 @@ class DoctrineManyToOneGenerator implements GeneratorInterface
             $from = $sectionManager->readByHandle($handle);
 
             /** @var SectionInterface $to */
+            $toHandle = $fieldConfig['field']['as'] ?? $fieldConfig['field']['to'];
             $to = $sectionManager->readByHandle(Handle::fromString($fieldConfig['field']['to']));
 
             $fromVersion = $from->getVersion()->toInt() > 1 ? ('_' . $from->getVersion()->toInt()) : '';
@@ -52,7 +53,8 @@ class DoctrineManyToOneGenerator implements GeneratorInterface
                 TemplateLoader::load(
                     (string) $templateDir . '/GeneratorTemplate/doctrine.manytoone.xml.php',
                     [
-                        'toHandle' => $fieldConfig['field']['to'] . $toVersion,
+                        'type' => $fieldConfig['field']['relationship-type'],
+                        'toHandle' => $toHandle . $toVersion,
                         'toFullyQualifiedClassName' => $to->getConfig()->getFullyQualifiedClassName(),
                         'fromPluralHandle' => Inflector::pluralize((string) $handle) . $fromVersion,
                     ]

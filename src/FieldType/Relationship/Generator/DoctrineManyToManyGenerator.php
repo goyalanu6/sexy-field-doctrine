@@ -54,6 +54,7 @@ class DoctrineManyToManyGenerator implements GeneratorInterface
                     (string) $templateDir . '/GeneratorTemplate/doctrine.manytomany.xml.php',
                     [
                         'type' => $fieldConfig['field']['relationship-type'],
+                        'owner' => $fieldConfig['field']['owner'],
                         'toPluralHandle' => Inflector::pluralize(
                             $fieldConfig['field']['to']
                         ) . $toVersion,

@@ -49,6 +49,7 @@ class DoctrineOneToOneGenerator implements GeneratorInterface
             $from = $sectionManager->readByHandle($sectionConfig->getHandle());
 
             /** @var SectionInterface $to */
+            $toHandle = $fieldConfig['field']['as'] ?? $fieldConfig['field']['to'];
             $to = $sectionManager->readByHandle(Handle::fromString($fieldConfig['field']['to']));
 
             $fromVersion = $from->getVersion()->toInt() > 1 ? ('_' . $from->getVersion()->toInt()) : '';
@@ -59,10 +60,11 @@ class DoctrineOneToOneGenerator implements GeneratorInterface
                     (string) $templateDir . '/GeneratorTemplate/doctrine.onetoone.xml.php',
                     [
                         'type' => $fieldConfig['field']['relationship-type'],
+                        'owner' => $fieldConfig['field']['owner'],
                         'toFullyQualifiedClassName' => $to->getConfig()->getFullyQualifiedClassName(),
                         'fromHandle' => $sectionConfig->getHandle() . $fromVersion,
                         'fromFullyQualifiedClassName' => $sectionConfig->getFullyQualifiedClassName(),
-                        'toHandle' => $fieldConfig['field']['to'] . $toVersion
+                        'toHandle' => $toHandle . $toVersion
                     ]
                 )
             );

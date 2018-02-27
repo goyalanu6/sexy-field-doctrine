@@ -37,7 +37,8 @@ final class DoctrineOneToOneGeneratorTest extends TestCase
                     'name' => 'iets',
                     'handle' => 'niets',
                     'kind' => 'wrong kind',
-                    'relationship-type' => 'owningSide'
+                    'relationship-type' => 'bidirectional',
+                    'owner' => true
                 ]
         ];
         $field = $field->setConfig($fieldArrayThing);
@@ -67,7 +68,7 @@ final class DoctrineOneToOneGeneratorTest extends TestCase
      * @test
      * @covers ::generate
      */
-    public function it_should_generate_with_correct_kind()
+    public function it_should_generate_with_bidirectional_and_owner()
     {
         $fieldArrayThing = [
             'field' =>
@@ -75,7 +76,8 @@ final class DoctrineOneToOneGeneratorTest extends TestCase
                     'name' => 'iets',
                     'handle' => 'some handle',
                     'kind' => DoctrineOneToOneGenerator::KIND,
-                    'relationship-type' => 'inverseSide',
+                    'relationship-type' => 'bidirectional',
+                    'owner' => true,
                     'from' => 'me',
                     'to' => 'you',
                     'type' => 'not my type'
@@ -149,8 +151,205 @@ final class DoctrineOneToOneGeneratorTest extends TestCase
         $this->assertInstanceOf(Template::class, $generated);
 
         $expected = <<<EOT
+
+<one-to-one field="you_333" target-entity="namespace\Entity\Handle" inversed-by="niets_37">
+    <join-column name="you_333_id" referenced-column-name="id" />
+</one-to-one>
+
+
+EOT;
+
+        $this->assertEquals($expected, (string)$generated);
+    }
+
+    /**
+     * @test
+     * @covers ::generate
+     */
+    public function it_should_generate_with_bidirectional_and_not_owner()
+    {
+        $fieldArrayThing = [
+            'field' =>
+                [
+                    'name' => 'iets',
+                    'handle' => 'some handle',
+                    'kind' => DoctrineOneToOneGenerator::KIND,
+                    'relationship-type' => 'bidirectional',
+                    'owner' => false,
+                    'from' => 'me',
+                    'to' => 'you',
+                    'type' => 'not my type'
+                ]
+        ];
+        $fieldConfig = FieldConfig::fromArray($fieldArrayThing);
+
+        $field = Mockery::mock(new Field())
+            ->shouldDeferMissing()
+            ->shouldReceive('getConfig')
+            ->andReturn($fieldConfig)
+            ->getMock();
+
+        $doctrineSectionManager = Mockery::mock(SectionManagerInterface::class);
+
+        $fromSectionInterface = Mockery::mock(SectionInterface::class);
+        $toSectionInterface = Mockery::mock(SectionInterface::class);
+
+        $doctrineSectionManager->shouldReceive('readByHandle')
+            ->once()
+            ->andReturn($fromSectionInterface);
+
+        $doctrineSectionManager->shouldReceive('readByHandle')
+            ->once()
+            ->andReturn($toSectionInterface);
+
+        $fromSectionInterface->shouldReceive('getVersion')
+            ->twice()
+            ->andReturn(Version::fromInt(37));
+
+        $toSectionInterface->shouldReceive('getVersion')
+            ->twice()
+            ->andReturn(Version::fromInt(333));
+
+        $toSectionConfig =
+            SectionConfig::fromArray(
+                [
+                    'section' => [
+                        'name' => 'nameTo',
+                        'handle' => 'handle',
+                        'fields' => ['a' => 'b'],
+                        'default' => 'default',
+                        'namespace' => 'namespace'
+                    ]
+                ]
+            );
+
+        $toSectionInterface->shouldReceive('getConfig')
+            ->once()
+            ->andReturn($toSectionConfig);
+
+        $options = [
+            'sectionManager' => $doctrineSectionManager,
+            'sectionConfig' => SectionConfig::fromArray([
+                'section' => [
+                    'name' => 'iets',
+                    'handle' => 'niets',
+                    'fields' => ['a' => 'v'],
+                    'default' => 'def',
+                    'namespace' => 'nameInSpace'
+                ]
+            ])
+        ];
+
+        $generated = DoctrineOneToOneGenerator::generate(
+            $field,
+            TemplateDir::fromString(__DIR__ . '/../../../../../src/FieldType/Relationship'),
+            $options
+        );
+
+        $this->assertInstanceOf(Template::class, $generated);
+
+        $expected = <<<EOT
 <one-to-one field="you_333" target-entity="namespace\Entity\Handle" mapped-by="niets_37" />
 
+
+
+EOT;
+
+        $this->assertEquals($expected, (string)$generated);
+    }
+
+    /**
+     * @test
+     * @covers ::generate
+     */
+    public function it_should_generate_with_unidirectional()
+    {
+        $fieldArrayThing = [
+            'field' =>
+                [
+                    'name' => 'iets',
+                    'handle' => 'some handle',
+                    'kind' => DoctrineOneToOneGenerator::KIND,
+                    'relationship-type' => 'unidirectional',
+                    'owner' => true,
+                    'from' => 'me',
+                    'to' => 'you',
+                    'type' => 'not my type'
+                ]
+        ];
+        $fieldConfig = FieldConfig::fromArray($fieldArrayThing);
+
+        $field = Mockery::mock(new Field())
+            ->shouldDeferMissing()
+            ->shouldReceive('getConfig')
+            ->andReturn($fieldConfig)
+            ->getMock();
+
+        $doctrineSectionManager = Mockery::mock(SectionManagerInterface::class);
+
+        $fromSectionInterface = Mockery::mock(SectionInterface::class);
+        $toSectionInterface = Mockery::mock(SectionInterface::class);
+
+        $doctrineSectionManager->shouldReceive('readByHandle')
+            ->once()
+            ->andReturn($fromSectionInterface);
+
+        $doctrineSectionManager->shouldReceive('readByHandle')
+            ->once()
+            ->andReturn($toSectionInterface);
+
+        $fromSectionInterface->shouldReceive('getVersion')
+            ->twice()
+            ->andReturn(Version::fromInt(37));
+
+        $toSectionInterface->shouldReceive('getVersion')
+            ->twice()
+            ->andReturn(Version::fromInt(333));
+
+        $toSectionConfig =
+            SectionConfig::fromArray(
+                [
+                    'section' => [
+                        'name' => 'nameTo',
+                        'handle' => 'handle',
+                        'fields' => ['a' => 'b'],
+                        'default' => 'default',
+                        'namespace' => 'namespace'
+                    ]
+                ]
+            );
+
+        $toSectionInterface->shouldReceive('getConfig')
+            ->once()
+            ->andReturn($toSectionConfig);
+
+        $options = [
+            'sectionManager' => $doctrineSectionManager,
+            'sectionConfig' => SectionConfig::fromArray([
+                'section' => [
+                    'name' => 'iets',
+                    'handle' => 'niets',
+                    'fields' => ['a' => 'v'],
+                    'default' => 'def',
+                    'namespace' => 'nameInSpace'
+                ]
+            ])
+        ];
+
+        $generated = DoctrineOneToOneGenerator::generate(
+            $field,
+            TemplateDir::fromString(__DIR__ . '/../../../../../src/FieldType/Relationship'),
+            $options
+        );
+
+        $this->assertInstanceOf(Template::class, $generated);
+
+        $expected = <<<EOT
+
+
+<one-to-one field="you_333" target-entity="namespace\Entity\Handle">
+   <join-column name="you_333_id" referenced-column-name="id" />
+</one-to-one>
 
 EOT;
 
