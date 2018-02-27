@@ -43,6 +43,7 @@ class DoctrineOneToManyGenerator implements GeneratorInterface
             $from = $sectionManager->readByHandle($handle);
 
             /** @var SectionInterface $to */
+            $toHandle = $fieldConfig['field']['as'] ?? $fieldConfig['field']['to'];
             $to = $sectionManager->readByHandle(Handle::fromString($fieldConfig['field']['to']));
 
             $fromVersion = $from->getVersion()->toInt() > 1 ? ('_' . $from->getVersion()->toInt()) : '';
@@ -52,11 +53,11 @@ class DoctrineOneToManyGenerator implements GeneratorInterface
                 TemplateLoader::load(
                     (string) $templateDir . '/GeneratorTemplate/doctrine.onetomany.xml.php',
                     [
-                        'toPluralHandle' => Inflector::pluralize($fieldConfig['field']['to']) . $toVersion,
+                        'toPluralHandle' => Inflector::pluralize($toHandle) . $toVersion,
                         'toFullyQualifiedClassName' => $to->getConfig()->getFullyQualifiedClassName(),
                         'fromHandle' => (string) $handle, // Don't version this one, it's mapped to the entity method.
                         'fromPluralHandle' => Inflector::pluralize((string) $handle) . $fromVersion,
-                        'toHandle' => $fieldConfig['field']['to'] . $toVersion
+                        'toHandle' => $toHandle . $toVersion
                     ]
                 )
             );
