@@ -148,4 +148,96 @@ EOT;
 
         $this->assertEquals($expected, (string)$generated);
     }
+
+    /**
+     * @test
+     * @covers ::generate
+     */
+    public function it_generates_a_template_with_an_aliassed_field_name()
+    {
+        $fieldArrayThing = [
+            'field' =>
+                [
+                    'name' => 'iets',
+                    'handle' => 'some handle',
+                    'kind' => DoctrineOneToManyGenerator::KIND,
+                    'from' => 'this',
+                    'to' => 'that',
+                    'as' => 'callMeForThat',
+                    'type' => 'not my type'
+                ]
+        ];
+        $fieldConfig = FieldConfig::fromArray($fieldArrayThing);
+
+        $field = Mockery::mock(new Field())
+            ->shouldDeferMissing()
+            ->shouldReceive('getConfig')
+            ->andReturn($fieldConfig)
+            ->getMock();
+
+        $doctrineSectionManager = Mockery::mock(SectionManagerInterface::class);
+        $fromSectionInterface = Mockery::mock(SectionInterface::class);
+        $toSectionInterface = Mockery::mock(SectionInterface::class);
+
+        $doctrineSectionManager->shouldReceive('readByHandle')
+            ->once()
+            ->andReturn($fromSectionInterface);
+
+        $doctrineSectionManager->shouldReceive('readByHandle')
+            ->once()
+            ->andReturn($toSectionInterface);
+
+        $fromSectionInterface->shouldReceive('getVersion')
+            ->twice()
+            ->andReturn(Version::fromInt(37));
+
+        $toSectionInterface->shouldReceive('getVersion')
+            ->twice()
+            ->andReturn(Version::fromInt(666));
+
+        $toSectionConfig =
+            SectionConfig::fromArray(
+                [
+                    'section' => [
+                        'name' => 'nameTo',
+                        'handle' => 'ToBeMapped',
+                        'fields' => ['a', 'b'],
+                        'default' => 'default',
+                        'namespace' => 'nameFromSpace'
+                    ]
+                ]
+            );
+
+        $toSectionInterface->shouldReceive('getConfig')
+            ->once()
+            ->andReturn($toSectionConfig);
+
+        $options = [
+            'sectionManager' => $doctrineSectionManager,
+            'sectionConfig' => SectionConfig::fromArray([
+                'section' => [
+                    'name' => 'iets',
+                    'handle' => 'mapper',
+                    'fields' => ['a' ,'v', 'b'],
+                    'default' => 'def',
+                    'namespace' => 'nameInSpace'
+                ]
+            ])
+        ];
+
+        $generated = DoctrineOneToManyGenerator::generate(
+            $field,
+            TemplateDir::fromString('src/FieldType/Relationship'),
+            $options
+        );
+        $this->assertNotEmpty($generated);
+        $this->assertInstanceOf(Template::class, $generated);
+
+        $expected = <<<EOT
+<one-to-many field="callMeForThats_666" target-entity="nameFromSpace\Entity\ToBeMapped" mapped-by="mapper" />
+
+EOT;
+
+        $this->assertEquals($expected, (string)$generated);
+    }
 }
