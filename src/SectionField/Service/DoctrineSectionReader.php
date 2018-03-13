@@ -46,7 +46,7 @@ class DoctrineSectionReader implements ReadSectionInterface
         $this->queryBuilder = $this->entityManager->createQueryBuilder();
 
         $this->addSectionToQuery($readOptions->getSection()[0]);
-        $this->addIdToQuery($readOptions->getId());
+        $this->addIdToQuery($readOptions->getId(), $readOptions->getSection()[0]);
         $this->addSlugToQuery(
             $readOptions->getSlug(),
             $sectionConfig->getSlugField(),
@@ -85,10 +85,10 @@ class DoctrineSectionReader implements ReadSectionInterface
         $this->queryBuilder->from((string) $section, (string) $section->getClassName());
     }
 
-    private function addIdToQuery(Id $id = null): void
+    private function addIdToQuery(Id $id = null, FullyQualifiedClassName $section): void
     {
         if ($id instanceof Id) {
-            $this->queryBuilder->where('id = :id');
+            $this->queryBuilder->where((string) $section->getClassName() . '.id = :id');
             $this->queryBuilder->setParameter('id', $id->toInt());
         }
     }
