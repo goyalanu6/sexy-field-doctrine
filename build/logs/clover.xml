@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1521466403">
-  <project timestamp="1521466403">
+<coverage generated="1521467279">
+  <project timestamp="1521467279">
     <package name="Tardigrades\DependencyInjection">
       <file name="/Users/Dion/www/sexy-field/sexy-field-doctrine/src/DependencyInjection/SectionFieldDoctrineExtension.php">
         <class name="SectionFieldDoctrineExtension" namespace="Tardigrades\DependencyInjection">
