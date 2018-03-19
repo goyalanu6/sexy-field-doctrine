@@ -9,7 +9,6 @@ use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Tardigrades\SectionField\ValueObject\FullyQualifiedClassName;
 use Tardigrades\SectionField\ValueObject\Id;
-use Tardigrades\SectionField\ValueObject\JitRelationship;
 
 /**
  * @coversDefaultClass Tardigrades\SectionField\Service\DoctrineSectionCreator
@@ -47,15 +46,7 @@ final class DoctrineSectionCreatorTest extends TestCase
         $id = Id::fromInt(2222);
         $data = Mockery::mock('alias:Tardigrades\SectionField\Generator\CommonSectionInterface')->makePartial();
 
-        $jit = Mockery::mock(JitRelationship::fromFullyQualifiedClassNameAndId($className, $id))->makePartial();
-        $jit->shouldReceive('getFullyQualifiedClassName')->andReturn($className);
-        $jit->shouldReceive('getId')->andReturn($id);
-
         $section = new DoctrineSectionCreator($this->entityManager);
-
-        $this->entityManager->shouldReceive('getReference')
-            ->once()
-            ->with((string) $className, $id->toInt());
 
         $this->entityManager->shouldReceive('persist')
             ->once()
@@ -64,7 +55,7 @@ final class DoctrineSectionCreatorTest extends TestCase
         $this->entityManager->shouldReceive('flush')
             ->once();
 
-        $section->save($data, [$jit]);
+        $section->save($data);
     }
 
     /**
@@ -77,15 +68,7 @@ final class DoctrineSectionCreatorTest extends TestCase
         $id = Id::fromInt(2222);
         $data = Mockery::mock('alias:Tardigrades\SectionField\Generator\CommonSectionInterface')->makePartial();
 
-        $jit = Mockery::mock(JitRelationship::fromFullyQualifiedClassNameAndId($className, $id))->makePartial();
-        $jit->shouldReceive('getFullyQualifiedClassName')->andReturn($className);
-        $jit->shouldReceive('getId')->andReturn($id);
-
         $section = new DoctrineSectionCreator($this->entityManager);
-
-        $this->entityManager->shouldReceive('getReference')
-            ->once()
-            ->with((string) $className, $id->toInt());
 
         $this->entityManager->shouldReceive('persist')
             ->once()
@@ -94,7 +77,7 @@ final class DoctrineSectionCreatorTest extends TestCase
         $this->entityManager->shouldReceive('flush')
             ->never();
 
-        $section->persist($data, [$jit]);
+        $section->persist($data);
     }
 
     /**
