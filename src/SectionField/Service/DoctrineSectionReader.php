@@ -52,6 +52,10 @@ class DoctrineSectionReader implements ReadSectionInterface
             $sectionConfig->getSlugField(),
             $readOptions->getSection()[0]
         );
+        $this->addFieldToQuery(
+            $readOptions->getField(),
+            $readOptions->getSection()[0]
+        );
         $this->addLimitToQuery($readOptions->getLimit());
         $this->addOffsetToQuery($readOptions->getOffset());
         $this->addOrderByToQuery(
@@ -101,6 +105,18 @@ class DoctrineSectionReader implements ReadSectionInterface
         if ($slug instanceof Slug && $slugField instanceof SlugField) {
             $this->queryBuilder->where((string) $section->getClassName() . '.' . (string) $slugField . '= :slug');
             $this->queryBuilder->setParameter('slug', (string)$slug);
+        }
+    }
+
+    private function addFieldToQuery(
+        array $fields = null,
+        FullyQualifiedClassName $section
+    ): void {
+        if (!empty($fields)) {
+            foreach ($fields as $handle=>$fieldValue) {
+                $this->queryBuilder->andWhere((string) $section->getClassName() . '.' . (string) $handle . '= :' . $handle);
+                $this->queryBuilder->setParameter($handle, (string) $fieldValue);
+            }
         }
     }
 

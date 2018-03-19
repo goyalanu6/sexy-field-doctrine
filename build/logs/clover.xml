@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1521467279">
-  <project timestamp="1521467279">
+<coverage generated="1521472727">
+  <project timestamp="1521472727">
     <package name="Tardigrades\DependencyInjection">
       <file name="/Users/Dion/www/sexy-field/sexy-field-doctrine/src/DependencyInjection/SectionFieldDoctrineExtension.php">
         <class name="SectionFieldDoctrineExtension" namespace="Tardigrades\DependencyInjection">
@@ -251,7 +251,7 @@
       </file>
       <file name="/Users/Dion/www/sexy-field/sexy-field-doctrine/src/SectionField/Service/DoctrineSectionReader.php">
         <class name="DoctrineSectionReader" namespace="Tardigrades\SectionField\Service">
-          <metrics complexity="22" methods="10" coveredmethods="10" conditionals="0" coveredconditionals="0" statements="57" coveredstatements="57" elements="67" coveredelements="67"/>
+          <metrics complexity="25" methods="11" coveredmethods="11" conditionals="0" coveredconditionals="0" statements="65" coveredstatements="65" elements="76" coveredelements="76"/>
         </class>
         <line num="38" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="1"/>
         <line num="41" type="stmt" count="1"/>
@@ -267,72 +267,71 @@
         <line num="55" type="stmt" count="3"/>
         <line num="56" type="stmt" count="3"/>
         <line num="57" type="stmt" count="3"/>
-        <line num="58" type="stmt" count="3"/>
         <line num="59" type="stmt" count="3"/>
+        <line num="60" type="stmt" count="3"/>
         <line num="61" type="stmt" count="3"/>
         <line num="62" type="stmt" count="3"/>
         <line num="63" type="stmt" count="3"/>
-        <line num="64" type="stmt" count="3"/>
+        <line num="65" type="stmt" count="3"/>
         <line num="66" type="stmt" count="3"/>
         <line num="67" type="stmt" count="3"/>
         <line num="68" type="stmt" count="3"/>
-        <line num="69" type="stmt" count="3"/>
+        <line num="70" type="stmt" count="3"/>
+        <line num="71" type="stmt" count="3"/>
         <line num="72" type="stmt" count="3"/>
         <line num="73" type="stmt" count="3"/>
-        <line num="75" type="stmt" count="3"/>
-        <line num="76" type="stmt" count="1"/>
-        <line num="79" type="stmt" count="2"/>
-        <line num="82" type="method" name="addSectionToQuery" visibility="private" complexity="1" crap="1" count="3"/>
-        <line num="84" type="stmt" count="3"/>
-        <line num="85" type="stmt" count="3"/>
-        <line num="86" type="stmt" count="3"/>
-        <line num="88" type="method" name="addIdToQuery" visibility="private" complexity="2" crap="2" count="3"/>
+        <line num="76" type="stmt" count="3"/>
+        <line num="77" type="stmt" count="3"/>
+        <line num="79" type="stmt" count="3"/>
+        <line num="80" type="stmt" count="1"/>
+        <line num="83" type="stmt" count="2"/>
+        <line num="86" type="method" name="addSectionToQuery" visibility="private" complexity="1" crap="1" count="3"/>
+        <line num="88" type="stmt" count="3"/>
+        <line num="89" type="stmt" count="3"/>
         <line num="90" type="stmt" count="3"/>
-        <line num="91" type="stmt" count="1"/>
-        <line num="92" type="stmt" count="1"/>
+        <line num="92" type="method" name="addIdToQuery" visibility="private" complexity="2" crap="2" count="3"/>
         <line num="94" type="stmt" count="3"/>
-        <line num="96" type="method" name="addSlugToQuery" visibility="private" complexity="3" crap="3" count="3"/>
-        <line num="101" type="stmt" count="3"/>
-        <line num="102" type="stmt" count="1"/>
-        <line num="103" type="stmt" count="1"/>
+        <line num="95" type="stmt" count="1"/>
+        <line num="96" type="stmt" count="1"/>
+        <line num="98" type="stmt" count="3"/>
+        <line num="100" type="method" name="addSlugToQuery" visibility="private" complexity="3" crap="3" count="3"/>
         <line num="105" type="stmt" count="3"/>
-        <line num="107" type="method" name="addLimitToQuery" visibility="private" complexity="2" crap="2" count="3"/>
+        <line num="106" type="stmt" count="1"/>
+        <line num="107" type="stmt" count="1"/>
         <line num="109" type="stmt" count="3"/>
-        <line num="110" type="stmt" count="1"/>
-        <line num="112" type="stmt" count="3"/>
-        <line num="114" type="method" name="addOffsetToQuery" visibility="private" complexity="2" crap="2" count="3"/>
-        <line num="116" type="stmt" count="3"/>
+        <line num="111" type="method" name="addFieldToQuery" visibility="private" complexity="3" crap="3" count="3"/>
+        <line num="115" type="stmt" count="3"/>
+        <line num="116" type="stmt" count="1"/>
         <line num="117" type="stmt" count="1"/>
-        <line num="119" type="stmt" count="3"/>
-        <line num="121" type="method" name="addOrderByToQuery" visibility="private" complexity="3" crap="3" count="3"/>
-        <line num="123" type="stmt" count="3"/>
-        <line num="124" type="stmt" count="1"/>
-        <line num="125" type="stmt" count="1"/>
+        <line num="118" type="stmt" count="1"/>
+        <line num="121" type="stmt" count="3"/>
+        <line num="123" type="method" name="addLimitToQuery" visibility="private" complexity="2" crap="2" count="3"/>
+        <line num="125" type="stmt" count="3"/>
         <line num="126" type="stmt" count="1"/>
-        <line num="129" type="stmt" count="3"/>
-        <line num="131" type="method" name="addBeforeToQuery" visibility="private" complexity="3" crap="3" count="3"/>
-        <line num="136" type="stmt" count="3"/>
-        <line num="137" type="stmt" count="1"/>
-        <line num="138" type="stmt" count="1"/>
-        <line num="140" type="stmt" count="3"/>
-        <line num="142" type="method" name="addAfterToQuery" visibility="private" complexity="3" crap="3" count="3"/>
-        <line num="147" type="stmt" count="3"/>
-        <line num="148" type="stmt" count="1"/>
-        <line num="149" type="stmt" count="1"/>
-        <line num="151" type="stmt" count="3"/>
-        <metrics loc="152" ncloc="142" classes="1" methods="10" coveredmethods="10" conditionals="0" coveredconditionals="0" statements="57" coveredstatements="57" elements="67" coveredelements="67"/>
-      </file>
-      <file name="/Users/Dion/www/sexy-field/sexy-field-doctrine/src/SectionField/Service/EntryNotFoundException.php">
-        <class name="EntryNotFoundException" namespace="Tardigrades\SectionField\Service">
-          <metrics complexity="2" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="3" coveredstatements="3" elements="4" coveredelements="4"/>
-        </class>
-        <line num="20" type="method" name="__construct" visibility="public" complexity="2" crap="2" count="2"/>
-        <line num="22" type="stmt" count="2"/>
-        <line num="24" type="stmt" count="2"/>
-        <line num="25" type="stmt" count="2"/>
-        <metrics loc="26" ncloc="18" classes="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="3" coveredstatements="3" elements="4" coveredelements="4"/>
+        <line num="128" type="stmt" count="3"/>
+        <line num="130" type="method" name="addOffsetToQuery" visibility="private" complexity="2" crap="2" count="3"/>
+        <line num="132" type="stmt" count="3"/>
+        <line num="133" type="stmt" count="1"/>
+        <line num="135" type="stmt" count="3"/>
+        <line num="137" type="method" name="addOrderByToQuery" visibility="private" complexity="3" crap="3" count="3"/>
+        <line num="139" type="stmt" count="3"/>
+        <line num="140" type="stmt" count="1"/>
+        <line num="141" type="stmt" count="1"/>
+        <line num="142" type="stmt" count="1"/>
+        <line num="145" type="stmt" count="3"/>
+        <line num="147" type="method" name="addBeforeToQuery" visibility="private" complexity="3" crap="3" count="3"/>
+        <line num="152" type="stmt" count="3"/>
+        <line num="153" type="stmt" count="1"/>
+        <line num="154" type="stmt" count="1"/>
+        <line num="156" type="stmt" count="3"/>
+        <line num="158" type="method" name="addAfterToQuery" visibility="private" complexity="3" crap="3" count="3"/>
+        <line num="163" type="stmt" count="3"/>
+        <line num="164" type="stmt" count="1"/>
+        <line num="165" type="stmt" count="1"/>
+        <line num="167" type="stmt" count="3"/>
+        <metrics loc="168" ncloc="158" classes="1" methods="11" coveredmethods="11" conditionals="0" coveredconditionals="0" statements="65" coveredstatements="65" elements="76" coveredelements="76"/>
       </file>
     </package>
-    <metrics files="11" loc="775" ncloc="654" classes="11" methods="28" coveredmethods="26" conditionals="0" coveredconditionals="0" statements="228" coveredstatements="221" elements="256" coveredelements="247"/>
+    <metrics files="10" loc="765" ncloc="652" classes="10" methods="28" coveredmethods="26" conditionals="0" coveredconditionals="0" statements="233" coveredstatements="226" elements="261" coveredelements="252"/>
   </project>
 </coverage>

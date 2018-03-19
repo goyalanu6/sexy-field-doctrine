@@ -193,6 +193,13 @@ final class DoctrineSectionReaderTest extends TestCase
         $this->queryBuilder->shouldReceive('where')
             ->times(4);
 
+        $this->queryBuilder->shouldReceive('andWhere')
+            ->once();
+
+        $this->queryBuilder->shouldReceive('setParameter')
+            ->once()
+            ->with('color', 'purple');
+
         $this->queryBuilder->shouldReceive('setParameter')
             ->once()
             ->with('id', 1);
