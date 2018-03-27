@@ -45,7 +45,6 @@ class DoctrineConfigGenerator extends Generator implements GeneratorInterface
         $this->initializeTemplates();
 
         $fields = $this->fieldManager->readByHandles($this->sectionConfig->getFields());
-        $fields = $this->addOpposingRelationships($section, $fields);
 
         $this->generateElements($fields);
 

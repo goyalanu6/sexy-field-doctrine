@@ -88,28 +88,9 @@ final class DoctrineConfigGeneratorTest extends TestCase
 
         $fieldOne = $this->givenAFieldWithNameKindAndTo('One', 'one-to-one', 'Two');
 
-        $relationships = [
-            'sectionOne' => [
-                'fieldOne' => [
-                    'kind' => 'one-to-one',
-                    'to' => 'sectionTwo',
-                    'from' => 'sectionOne',
-                    'fullyQualifiedClassName' => FullyQualifiedClassName::fromString(
-                        '\\My\\Namespace\\FieldTypeClassOne'
-                    ),
-                    'relationship-type' => 'unidirectional',
-                    'owner' => true
-                ]
-            ]
-        ];
-
         $this->fieldManager->shouldReceive('readByHandles')
             ->once()
             ->andReturn([$fieldOne]);
-
-        $this->sectionManager->shouldReceive('getRelationshipsOfAll')
-            ->once()
-            ->andReturn($relationships);
 
         $this->sectionManager->shouldReceive('readByHandle')
             ->twice()
@@ -177,28 +158,9 @@ EOT;
 
         $fieldOne = $this->givenAFieldWithNameKindAndTo('One', 'one-to-one', 'Two');
 
-        $relationships = [
-            'sectionOne' => [
-                'fieldOne' => [
-                    'kind' => 'one-to-one',
-                    'to' => 'sectionTwo',
-                    'from' => 'sectionOne',
-                    'fullyQualifiedClassName' => FullyQualifiedClassName::fromString(
-                        '\\My\\Namespace\\FieldTypeClassOne'
-                    ),
-                    'relationship-type' => 'unidirectional',
-                    'owner' => true
-                ]
-            ]
-        ];
-
         $this->fieldManager->shouldReceive('readByHandles')
             ->once()
             ->andReturn([$fieldOne]);
-
-        $this->sectionManager->shouldReceive('getRelationshipsOfAll')
-            ->once()
-            ->andReturn($relationships);
 
         $this->container->shouldReceive('get')
             ->once()
@@ -239,28 +201,9 @@ EOT;
 
         $fieldOne = $this->givenAFieldWithNameKindAndTo('One', 'one-to-one', 'Two');
 
-        $relationships = [
-            'sectionOne' => [
-                'fieldOne' => [
-                    'kind' => 'one-to-one',
-                    'to' => 'sectionTwo',
-                    'from' => 'sectionOne',
-                    'fullyQualifiedClassName' => FullyQualifiedClassName::fromString(
-                        '\\My\\Namespace\\FieldTypeClassOne'
-                    ),
-                    'relationship-type' => 'unidirectional',
-                    'owner' => true
-                ]
-            ]
-        ];
-
         $this->fieldManager->shouldReceive('readByHandles')
             ->once()
             ->andReturn([$fieldOne]);
-
-        $this->sectionManager->shouldReceive('getRelationshipsOfAll')
-            ->once()
-            ->andReturn($relationships);
 
         $this->container->shouldReceive('get')
             ->twice()
