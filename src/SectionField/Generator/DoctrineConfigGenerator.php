@@ -59,6 +59,16 @@ class DoctrineConfigGenerator extends Generator implements GeneratorInterface
     {
         /** @var FieldInterface $field */
         foreach ($fields as $field) {
+
+            // First see if this field is to be ignored by this generator
+            try {
+                $fieldConfig = $field->getConfig()->getGeneratorConfig()->toArray();
+                if (!empty($fieldConfig[self::GENERATE_FOR]['ignore']) ||
+                    $fieldConfig[self::GENERATE_FOR]['ignore']) {
+                    continue;
+                }
+            } catch (\Exception $exception) {}
+
             $parsed = $this->getFieldTypeGeneratorConfig($field, self::GENERATE_FOR);
 
             /**
@@ -69,6 +79,7 @@ class DoctrineConfigGenerator extends Generator implements GeneratorInterface
                 if (!key_exists($item, $this->templates)) {
                     $this->templates[$item] = [];
                 }
+
                 if (class_exists($generator)) {
                     $interfaces = class_implements($generator);
                 } else {
@@ -79,6 +90,7 @@ class DoctrineConfigGenerator extends Generator implements GeneratorInterface
                     try {
                         $reflector = new ReflectionClass($generator);
                         $method = $reflector->getMethod('generate');
+
                         $options = [];
                         if (isset($method->getParameters()[1])) {
                             $options = [
