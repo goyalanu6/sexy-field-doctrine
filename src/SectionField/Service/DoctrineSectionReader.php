@@ -52,12 +52,14 @@ class DoctrineSectionReader implements ReadSectionInterface
             $sectionConfig->getSlugField(),
             $readOptions->getSection()[0]
         );
+
         $this->addFieldToQuery(
             $readOptions->getField(),
             $readOptions->getSection()[0]
         );
         $this->addLimitToQuery($readOptions->getLimit());
         $this->addOffsetToQuery($readOptions->getOffset());
+
         $this->addOrderByToQuery(
             $readOptions->getOrderBy(),
             $readOptions->getSection()[0]
@@ -112,10 +114,23 @@ class DoctrineSectionReader implements ReadSectionInterface
         array $fields = null,
         FullyQualifiedClassName $section
     ): void {
+
         if (!empty($fields)) {
             foreach ($fields as $handle=>$fieldValue) {
-                $this->queryBuilder->andWhere((string) $section->getClassName() . '.' . (string) $handle . '= :' . $handle);
-                $this->queryBuilder->setParameter($handle, (string) $fieldValue);
+                if (is_array($fieldValue)) {
+                    $this->queryBuilder->andWhere(
+                        $this->queryBuilder->expr()->in(
+                            (string) $section->getClassName() . '.' . (string) $handle,
+                            ':' . $handle
+                        )
+                    );
+                    $this->queryBuilder->setParameter($handle, $fieldValue);
+                } else {
+                    $this->queryBuilder->andWhere(
+                        (string) $section->getClassName() . '.' . (string) $handle . '= :' . $handle
+                    );
+                    $this->queryBuilder->setParameter($handle, (string) $fieldValue);
+                }
             }
         }
     }
@@ -137,8 +152,12 @@ class DoctrineSectionReader implements ReadSectionInterface
     private function addOrderByToQuery(OrderBy $orderBy = null, FullyQualifiedClassName $section = null): void
     {
         if ($orderBy instanceof OrderBy && $section instanceof FullyQualifiedClassName) {
+            $field = (string) $section->getClassName() . '.' . (string) $orderBy->getHandle();
+            if (strpos((string) $orderBy->getHandle(), '.')) {
+                $field = (string) $orderBy->getHandle();
+            }
             $this->queryBuilder->orderBy(
-                (string) $section->getClassName() . '.' . (string) $orderBy->getHandle(),
+                $field,
                 (string) $orderBy->getSort()
             );
         }
