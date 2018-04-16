@@ -74,7 +74,8 @@ final class DoctrineManyToManyGeneratorTest extends TestCase
                     'owner' => true,
                     'from' => 'this',
                     'to' => 'that',
-                    'type' => 'my type'
+                    'type' => 'my type',
+                    'cascade' => 'all'
                 ]
         ];
         $fieldConfig = FieldConfig::fromArray($fieldArrayThing);
@@ -142,10 +143,9 @@ final class DoctrineManyToManyGeneratorTest extends TestCase
         );
 
         $expected = <<<'EOT'
-
 <many-to-many field="thats_123" target-entity="nameFromSpace\Entity\ToBeMapped" inversed-by="mappers_37">
     <cascade>
-        <cascade-all/>
+        <cascade-all />
     </cascade>
     <join-table name="mappers_37_thats_123">
         <join-columns>
@@ -156,7 +156,6 @@ final class DoctrineManyToManyGeneratorTest extends TestCase
         </inverse-join-columns>
     </join-table>
 </many-to-many>
-
 
 EOT;
 
@@ -249,9 +248,8 @@ EOT;
         );
 
         $expected = <<<'EOT'
-
-
-<many-to-many field="thats_123" mapped-by="mappers_37" target-entity="nameFromSpace\Entity\ToBeMapped"/>
+<many-to-many field="thats_123" target-entity="nameFromSpace\Entity\ToBeMapped" mapped-by="mappers_37">
+</many-to-many>
 
 EOT;
 
@@ -276,7 +274,8 @@ EOT;
                     'owner' => true,
                     'from' => 'this',
                     'to' => 'that',
-                    'type' => 'my type'
+                    'type' => 'my type',
+                    'cascade' => 'persist'
                 ]
         ];
         $fieldConfig = FieldConfig::fromArray($fieldArrayThing);
@@ -346,7 +345,7 @@ EOT;
         $expected = <<<'EOT'
 <many-to-many field="thats_123" target-entity="nameFromSpace\Entity\ToBeMapped">
     <cascade>
-        <cascade-all/>
+        <cascade-persist />
     </cascade>
     <join-table name="mappers_37_thats_123">
         <join-columns>
@@ -357,8 +356,6 @@ EOT;
         </inverse-join-columns>
     </join-table>
 </many-to-many>
-
-
 
 EOT;
 
@@ -452,11 +449,7 @@ EOT;
         );
 
         $expected = <<<'EOT'
-
 <many-to-many field="aliases_123" target-entity="nameFromSpace\Entity\ToBeMapped" inversed-by="mappers_37">
-    <cascade>
-        <cascade-all/>
-    </cascade>
     <join-table name="mappers_37_aliases_123">
         <join-columns>
             <join-column name="mapper_37_id" referenced-column-name="id" />
@@ -466,7 +459,6 @@ EOT;
         </inverse-join-columns>
     </join-table>
 </many-to-many>
-
 
 EOT;
 

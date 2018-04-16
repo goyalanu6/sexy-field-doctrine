@@ -145,7 +145,6 @@ class DoctrineManyToOneGeneratorTest extends TestCase
     <join-column name="that_123_id" referenced-column-name="id" />
 </many-to-one>
 
-
 EOT;
 
         $this->assertNotEmpty($generated);
@@ -168,7 +167,8 @@ EOT;
                     'relationship-type' => 'unidirectional',
                     'from' => 'this',
                     'to' => 'that',
-                    'type' => 'not my type'
+                    'type' => 'not my type',
+                    'cascade' => 'delete'
                 ]
         ];
         $fieldConfig = FieldConfig::fromArray($fieldArrayThing);
@@ -236,8 +236,10 @@ EOT;
         );
 
         $expected = <<<'EOT'
-
 <many-to-one field="that_123" target-entity="nameFromSpace\Entity\ToBeMapped">
+    <cascade>
+        <cascade-delete />
+    </cascade>
     <join-column name="that_123_id" referenced-column-name="id" />
 </many-to-one>
 

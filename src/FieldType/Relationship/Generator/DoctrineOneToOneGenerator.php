@@ -64,7 +64,8 @@ class DoctrineOneToOneGenerator implements GeneratorInterface
                         'toFullyQualifiedClassName' => $to->getConfig()->getFullyQualifiedClassName(),
                         'fromHandle' => $sectionConfig->getHandle() . $fromVersion,
                         'fromFullyQualifiedClassName' => $sectionConfig->getFullyQualifiedClassName(),
-                        'toHandle' => $toHandle . $toVersion
+                        'toHandle' => $toHandle . $toVersion,
+                        'cascade' => $fieldConfig['field']['cascade'] ?? false
                     ]
                 )
             );

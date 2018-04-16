@@ -80,7 +80,8 @@ final class DoctrineOneToOneGeneratorTest extends TestCase
                     'owner' => true,
                     'from' => 'me',
                     'to' => 'you',
-                    'type' => 'not my type'
+                    'type' => 'not my type',
+                    'cascade' => 'persist'
                 ]
         ];
         $fieldConfig = FieldConfig::fromArray($fieldArrayThing);
@@ -151,11 +152,12 @@ final class DoctrineOneToOneGeneratorTest extends TestCase
         $this->assertInstanceOf(Template::class, $generated);
 
         $expected = <<<EOT
-
 <one-to-one field="you_333" target-entity="namespace\Entity\Handle" inversed-by="niets_37">
+    <cascade>
+        <cascade-persist />
+    </cascade>
     <join-column name="you_333_id" referenced-column-name="id" />
 </one-to-one>
-
 
 EOT;
 
@@ -249,9 +251,8 @@ EOT;
         $this->assertInstanceOf(Template::class, $generated);
 
         $expected = <<<EOT
-<one-to-one field="you_333" target-entity="namespace\Entity\Handle" mapped-by="niets_37" />
-
-
+<one-to-one field="you_333" target-entity="namespace\Entity\Handle" mapped-by="niets_37">
+</one-to-one>
 
 EOT;
 
@@ -345,10 +346,8 @@ EOT;
         $this->assertInstanceOf(Template::class, $generated);
 
         $expected = <<<EOT
-
-
 <one-to-one field="you_333" target-entity="namespace\Entity\Handle">
-   <join-column name="you_333_id" referenced-column-name="id" />
+    <join-column name="you_333_id" referenced-column-name="id" />
 </one-to-one>
 
 EOT;
