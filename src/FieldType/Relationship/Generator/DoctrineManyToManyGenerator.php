@@ -67,7 +67,8 @@ class DoctrineManyToManyGenerator implements GeneratorInterface
                         ) . $fromVersion,
                         'fromFullyQualifiedClassName' => $sectionConfig
                             ->getFullyQualifiedClassName(),
-                        'toHandle' => $fieldConfig['field']['to'] . $toVersion
+                        'toHandle' => $fieldConfig['field']['to'] . $toVersion,
+                        'cascade' => $fieldConfig['field']['cascade'] ?? false
                     ]
                 )
             );

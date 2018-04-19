@@ -57,6 +57,7 @@ class DoctrineManyToOneGenerator implements GeneratorInterface
                         'toHandle' => $toHandle . $toVersion,
                         'toFullyQualifiedClassName' => $to->getConfig()->getFullyQualifiedClassName(),
                         'fromPluralHandle' => Inflector::pluralize((string) $handle) . $fromVersion,
+                        'cascade' => $fieldConfig['field']['cascade'] ?? false
                     ]
                 )
             );
