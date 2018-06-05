@@ -25,10 +25,14 @@ final class DoctrineSectionReaderTest extends TestCase
     /** @var QueryBuilder|Mockery\Mock */
     private $queryBuilder;
 
+    /** @var FetchFieldsQueryBuilder|Mockery\Mock */
+    private $fetchFieldsQueryBuilder;
+
     public function setUp()
     {
         $this->entityManager = Mockery::mock(EntityManagerInterface::class);
         $this->queryBuilder = Mockery::mock(QueryBuilder::class);
+        $this->fetchFieldsQueryBuilder = Mockery::mock(FetchFieldsQueryBuilder::class);
     }
 
     /**
@@ -37,7 +41,7 @@ final class DoctrineSectionReaderTest extends TestCase
      */
     public function it_constructs()
     {
-        $reader = new DoctrineSectionReader($this->entityManager);
+        $reader = new DoctrineSectionReader($this->entityManager, $this->fetchFieldsQueryBuilder);
         $this->assertInstanceOf(DoctrineSectionReader::class, $reader);
     }
 
@@ -63,7 +67,7 @@ final class DoctrineSectionReaderTest extends TestCase
             ]
         ];
 
-        $reader = new DoctrineSectionReader($this->entityManager);
+        $reader = new DoctrineSectionReader($this->entityManager, $this->fetchFieldsQueryBuilder);
         $sectionConfig = SectionConfig::fromArray($configData);
         $readOptions = ReadOptions::fromArray($optionData);
 
@@ -111,7 +115,7 @@ final class DoctrineSectionReaderTest extends TestCase
             ]
         ];
 
-        $reader = new DoctrineSectionReader($this->entityManager);
+        $reader = new DoctrineSectionReader($this->entityManager, $this->fetchFieldsQueryBuilder);
         $sectionConfig = SectionConfig::fromArray($configData);
         $readOptions = ReadOptions::fromArray($optionData);
 
@@ -149,7 +153,7 @@ final class DoctrineSectionReaderTest extends TestCase
         $optionData = [
             'id' => 1,
             'slug' => 'section-one',
-            'section' => ['Section One'],
+            'section' => ['section One'],
             'sectionId' => 2,
             'limit' => 3,
             'offset' => 4,
@@ -171,7 +175,7 @@ final class DoctrineSectionReaderTest extends TestCase
                 'namespace' => 'namespace'
             ]
         ];
-        $reader = new DoctrineSectionReader($this->entityManager);
+        $reader = new DoctrineSectionReader($this->entityManager, $this->fetchFieldsQueryBuilder);
         $sectionConfig = SectionConfig::fromArray($configData);
         $readOptions = ReadOptions::fromArray($optionData);
 
@@ -184,11 +188,11 @@ final class DoctrineSectionReaderTest extends TestCase
 
         $this->queryBuilder->shouldReceive('select')
             ->once()
-            ->with('Section One');
+            ->with('section One');
 
         $this->queryBuilder->shouldReceive('from')
             ->once()
-            ->with('Section One', 'Section One');
+            ->with('section One', 'section One');
 
         $this->queryBuilder->shouldReceive('where')
             ->times(4);
@@ -218,7 +222,7 @@ final class DoctrineSectionReaderTest extends TestCase
 
         $this->queryBuilder->shouldReceive('orderBy')
             ->once()
-            ->with('Section One.some', 'asc');
+            ->with('section One.some', 'asc');
 
         $this->queryBuilder->shouldReceive('setParameter')
             ->once()
