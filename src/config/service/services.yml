@@ -1,23 +1,34 @@
 services:
-  section_field.generator.doctrine_config_generator:
-    class: Tardigrades\SectionField\Generator\DoctrineConfigGenerator
+  Tardigrades\SectionField\Generator\DoctrineConfigGenerator:
     arguments:
       - '@section_field.manager.doctrine.field_manager'
       - '@section_field.manager.doctrine.field_type_manager'
       - '@section_field.manager.doctrine.section_manager'
       - '@service_container'
 
-  section_field.doctrine.create.section:
-    class: Tardigrades\SectionField\Service\DoctrineSectionCreator
+  section_field.generator.doctrine_config_generator: '@Tardigrades\SectionField\Generator\DoctrineConfigGenerator'
+
+  Tardigrades\SectionField\Service\FetchFieldsQueryBuilder:
+    arguments:
+      - '@section_field.manager.doctrine.section_manager'
+
+  section_field.doctrine.fetch_fields_query_builder: '@Tardigrades\SectionField\Service\FetchFieldsQueryBuilder'
+
+  Tardigrades\SectionField\Service\DoctrineSectionCreator:
     arguments:
       - '@doctrine.orm.entity_manager'
 
-  section_field.doctrine.read.section:
-    class: Tardigrades\SectionField\Service\DoctrineSectionReader
+  section_field.doctrine.create.section: '@Tardigrades\SectionField\Service\DoctrineSectionCreator'
+
+  Tardigrades\SectionField\Service\DoctrineSectionReader:
+    arguments:
+      - '@doctrine.orm.entity_manager'
+      - '@section_field.doctrine.fetch_fields_query_builder'
+
+  section_field.doctrine.read.section: '@Tardigrades\SectionField\Service\DoctrineSectionReader'
+
+  Tardigrades\SectionField\Service\DoctrineSectionDeleter:
     arguments:
       - '@doctrine.orm.entity_manager'
 
-  section_field.doctrine.delete.section:
-    class: Tardigrades\SectionField\Service\DoctrineSectionDeleter
-    arguments:
-      - '@doctrine.orm.entity_manager'
+  section_field.doctrine.delete.section: '@Tardigrades\SectionField\Service\DoctrineSectionDeleter'

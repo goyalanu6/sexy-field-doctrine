@@ -35,48 +35,68 @@ class DoctrineSectionReader implements ReadSectionInterface
     /** @var QueryBuilder */
     private $queryBuilder;
 
+    /** FetchFieldsQueryBuilder */
+    private $fetchFieldsQueryBuilder;
+
     public function __construct(
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        FetchFieldsQueryBuilder $fetchFieldsQueryBuilder
     ) {
         $this->entityManager = $entityManager;
+        $this->fetchFieldsQueryBuilder = $fetchFieldsQueryBuilder;
     }
 
     public function read(ReadOptionsInterface $readOptions, SectionConfig $sectionConfig = null): \ArrayIterator
     {
+        $fetchFields = $readOptions->getFetchFields();
         $this->queryBuilder = $this->entityManager->createQueryBuilder();
 
-        $this->addSectionToQuery($readOptions->getSection()[0]);
-        $this->addIdToQuery($readOptions->getId(), $readOptions->getSection()[0]);
+        /** @var FullyQualifiedClassName $section */
+        $section = $readOptions->getSection()[0];
+
+        $formatResult = false;
+        if (!is_null($fetchFields)) {
+            $this->queryBuilder = $this->fetchFieldsQueryBuilder->getQuery($this->queryBuilder, $section, $fetchFields);
+            $formatResult = true;
+        } else {
+            $this->addSectionToQuery($section);
+        }
+
+        $this->addIdToQuery($readOptions->getId(), $section);
         $this->addSlugToQuery(
             $readOptions->getSlug(),
             $sectionConfig->getSlugField(),
-            $readOptions->getSection()[0]
+            $section
         );
 
         $this->addFieldToQuery(
             $readOptions->getField(),
-            $readOptions->getSection()[0]
+            $section
         );
         $this->addLimitToQuery($readOptions->getLimit());
         $this->addOffsetToQuery($readOptions->getOffset());
 
         $this->addOrderByToQuery(
             $readOptions->getOrderBy(),
-            $readOptions->getSection()[0]
+            $section
         );
         $this->addBeforeToQuery(
             $sectionConfig->getCreatedField(),
             $readOptions->getBefore(),
-            $readOptions->getSection()[0]
+            $section
         );
         $this->addAfterToQuery(
             $sectionConfig->getCreatedField(),
             $readOptions->getAfter(),
-            $readOptions->getSection()[0]
+            $section
         );
-
         $query = $this->queryBuilder->getQuery();
+
         $results = $query->getResult();
+
+        if ($formatResult) {
+            $results = $this->formatResult($results, $section);
+        }
 
         if (count($results) <= 0) {
             throw new EntryNotFoundException();
@@ -85,16 +105,37 @@ class DoctrineSectionReader implements ReadSectionInterface
         return new \ArrayIterator($results);
     }
 
+    private function formatResult(array $results, FullyQualifiedClassName $section): array
+    {
+        $className = lcfirst($section->getClassName());
+        $parsed = [];
+        foreach ($results as $fields) {
+            $entry = [];
+            foreach ($fields as $field=>&$value) {
+                $field = str_replace($className . '_', '', $field);
+                $pieces = explode('_', $field);
+                foreach (array_reverse($pieces) as $piece) {
+                    $value = [ $piece => $value ];
+                }
+                $entry = array_merge_recursive($value, $entry);
+            }
+            $parsed[] = $entry;
+        }
+        return $parsed;
+    }
+
     private function addSectionToQuery(FullyQualifiedClassName $section): void
     {
-        $this->queryBuilder->select((string) $section->getClassName());
-        $this->queryBuilder->from((string) $section, (string) $section->getClassName());
+        $className = lcfirst((string) $section->getClassName());
+        $this->queryBuilder->select((string) $className);
+        $this->queryBuilder->from((string) $section, (string) $className);
     }
 
     private function addIdToQuery(Id $id = null, FullyQualifiedClassName $section): void
     {
         if ($id instanceof Id) {
-            $this->queryBuilder->where((string) $section->getClassName() . '.id = :id');
+            $className = lcfirst((string) $section->getClassName());
+            $this->queryBuilder->where((string) $className . '.id = :id');
             $this->queryBuilder->setParameter('id', $id->toInt());
         }
     }
@@ -105,7 +146,8 @@ class DoctrineSectionReader implements ReadSectionInterface
         FullyQualifiedClassName $section
     ): void {
         if ($slug instanceof Slug && $slugField instanceof SlugField) {
-            $this->queryBuilder->where((string) $section->getClassName() . '.' . (string) $slugField . '= :slug');
+            $className = lcfirst((string) $section->getClassName());
+            $this->queryBuilder->where((string) $className . '.' . (string) $slugField . '= :slug');
             $this->queryBuilder->setParameter('slug', (string)$slug);
         }
     }
@@ -116,18 +158,19 @@ class DoctrineSectionReader implements ReadSectionInterface
     ): void {
 
         if (!empty($fields)) {
+            $className = lcfirst((string) $section->getClassName());
             foreach ($fields as $handle=>$fieldValue) {
                 if (is_array($fieldValue)) {
                     $this->queryBuilder->andWhere(
                         $this->queryBuilder->expr()->in(
-                            (string) $section->getClassName() . '.' . (string) $handle,
+                            (string) $className . '.' . (string) $handle,
                             ':' . $handle
                         )
                     );
                     $this->queryBuilder->setParameter($handle, $fieldValue);
                 } else {
                     $this->queryBuilder->andWhere(
-                        (string) $section->getClassName() . '.' . (string) $handle . '= :' . $handle
+                        (string) $className . '.' . (string) $handle . '= :' . $handle
                     );
                     $this->queryBuilder->setParameter($handle, (string) $fieldValue);
                 }
@@ -152,7 +195,8 @@ class DoctrineSectionReader implements ReadSectionInterface
     private function addOrderByToQuery(OrderBy $orderBy = null, FullyQualifiedClassName $section = null): void
     {
         if ($orderBy instanceof OrderBy && $section instanceof FullyQualifiedClassName) {
-            $field = (string) $section->getClassName() . '.' . (string) $orderBy->getHandle();
+            $className = lcfirst((string) $section->getClassName());
+            $field = (string) $className . '.' . (string) $orderBy->getHandle();
             if (strpos((string) $orderBy->getHandle(), '.')) {
                 $field = (string) $orderBy->getHandle();
             }
@@ -169,7 +213,8 @@ class DoctrineSectionReader implements ReadSectionInterface
         FullyQualifiedClassName $section = null
     ): void {
         if ($before instanceof Before && $section instanceof FullyQualifiedClassName) {
-            $this->queryBuilder->where($section->getClassName() . '.' . (string) $createdField . ' < :before');
+            $className = lcfirst((string) $section->getClassName());
+            $this->queryBuilder->where($className . '.' . (string) $createdField . ' < :before');
             $this->queryBuilder->setParameter('before', (string) $before);
         }
     }
@@ -180,7 +225,8 @@ class DoctrineSectionReader implements ReadSectionInterface
         FullyQualifiedClassName $section = null
     ): void {
         if ($after instanceof After && $section instanceof FullyQualifiedClassName) {
-            $this->queryBuilder->where($section->getClassName() . '.' . (string) $createdField . ' > :after');
+            $className = lcfirst((string) $section->getClassName());
+            $this->queryBuilder->where($className. '.' . (string) $createdField . ' > :after');
             $this->queryBuilder->setParameter('after', (string) $after);
         }
     }
