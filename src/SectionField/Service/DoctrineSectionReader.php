@@ -169,10 +169,19 @@ class DoctrineSectionReader implements ReadSectionInterface
                     );
                     $this->queryBuilder->setParameter($handle, $fieldValue);
                 } else {
-                    $this->queryBuilder->andWhere(
-                        (string) $className . '.' . (string) $handle . '= :' . $handle
-                    );
-                    $this->queryBuilder->setParameter($handle, (string) $fieldValue);
+                    try {
+                        $this->queryBuilder->innerJoin(
+                            (string)$className . '.' . $handle,
+                            $handle,
+                            'WITH',
+                            $handle . '.id = ' . (string)$fieldValue
+                        );
+                    } catch (\Exception $exception) {
+                        $this->queryBuilder->andWhere(
+                            (string)$className . '.' . (string)$handle . '= :' . $handle
+                        );
+                        $this->queryBuilder->setParameter($handle, (string)$fieldValue);
+                    }
                 }
             }
         }
