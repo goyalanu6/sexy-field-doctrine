@@ -73,6 +73,10 @@ class DoctrineSectionReader implements ReadSectionInterface
             $readOptions->getField(),
             $section
         );
+        $this->addJoinToQuery(
+            $readOptions->getJoin(),
+            $section
+        );
         $this->addLimitToQuery($readOptions->getLimit());
         $this->addOffsetToQuery($readOptions->getOffset());
 
@@ -179,12 +183,12 @@ class DoctrineSectionReader implements ReadSectionInterface
     }
 
     private function addJoinToQuery(
-        array $fields = null,
+        array $joins = null,
         FullyQualifiedClassName $section
     ) {
-        if (!empty($fields)) {
+        if (!empty($joins)) {
             $className = lcfirst((string) $section->getClassName());
-            foreach ($fields as $handle=>$fieldValue) {
+            foreach ($joins as $handle=>$fieldValue) {
                 $this->queryBuilder->innerJoin(
                     (string)$className . '.' . $handle,
                     $handle,
