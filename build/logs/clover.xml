@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1528202600">
-  <project timestamp="1528202600">
+<coverage generated="1528718630">
+  <project timestamp="1528718630">
     <package name="Tardigrades\DependencyInjection">
       <file name="/Users/Dion/www/sexy-field/sexy-field-doctrine/src/DependencyInjection/SectionFieldDoctrineExtension.php">
         <class name="SectionFieldDoctrineExtension" namespace="Tardigrades\DependencyInjection">
@@ -259,7 +259,7 @@
       </file>
       <file name="/Users/Dion/www/sexy-field/sexy-field-doctrine/src/SectionField/Service/DoctrineSectionReader.php">
         <class name="DoctrineSectionReader" namespace="Tardigrades\SectionField\Service">
-          <metrics complexity="33" methods="12" coveredmethods="8" conditionals="0" coveredconditionals="0" statements="103" coveredstatements="81" elements="115" coveredelements="89"/>
+          <metrics complexity="36" methods="13" coveredmethods="8" conditionals="0" coveredconditionals="0" statements="112" coveredstatements="81" elements="125" coveredelements="89"/>
         </class>
         <line num="41" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="1"/>
         <line num="45" type="stmt" count="1"/>
@@ -346,37 +346,47 @@
         <line num="173" type="stmt" count="1"/>
         <line num="175" type="stmt" count="1"/>
         <line num="179" type="stmt" count="3"/>
-        <line num="181" type="method" name="addLimitToQuery" visibility="private" complexity="2" crap="2" count="3"/>
-        <line num="183" type="stmt" count="3"/>
-        <line num="184" type="stmt" count="1"/>
-        <line num="186" type="stmt" count="3"/>
-        <line num="188" type="method" name="addOffsetToQuery" visibility="private" complexity="2" crap="2" count="3"/>
-        <line num="190" type="stmt" count="3"/>
-        <line num="191" type="stmt" count="1"/>
-        <line num="193" type="stmt" count="3"/>
-        <line num="195" type="method" name="addOrderByToQuery" visibility="private" complexity="4" crap="4.18" count="3"/>
-        <line num="197" type="stmt" count="3"/>
-        <line num="198" type="stmt" count="1"/>
-        <line num="199" type="stmt" count="1"/>
-        <line num="200" type="stmt" count="1"/>
-        <line num="201" type="stmt" count="0"/>
-        <line num="203" type="stmt" count="1"/>
-        <line num="204" type="stmt" count="0"/>
-        <line num="205" type="stmt" count="1"/>
-        <line num="208" type="stmt" count="3"/>
-        <line num="210" type="method" name="addBeforeToQuery" visibility="private" complexity="3" crap="3" count="3"/>
-        <line num="215" type="stmt" count="3"/>
+        <line num="181" type="method" name="addJoinToQuery" visibility="private" complexity="3" crap="12" count="0"/>
+        <line num="185" type="stmt" count="0"/>
+        <line num="186" type="stmt" count="0"/>
+        <line num="187" type="stmt" count="0"/>
+        <line num="188" type="stmt" count="0"/>
+        <line num="189" type="stmt" count="0"/>
+        <line num="190" type="stmt" count="0"/>
+        <line num="191" type="stmt" count="0"/>
+        <line num="192" type="stmt" count="0"/>
+        <line num="196" type="stmt" count="0"/>
+        <line num="198" type="method" name="addLimitToQuery" visibility="private" complexity="2" crap="2" count="3"/>
+        <line num="200" type="stmt" count="3"/>
+        <line num="201" type="stmt" count="1"/>
+        <line num="203" type="stmt" count="3"/>
+        <line num="205" type="method" name="addOffsetToQuery" visibility="private" complexity="2" crap="2" count="3"/>
+        <line num="207" type="stmt" count="3"/>
+        <line num="208" type="stmt" count="1"/>
+        <line num="210" type="stmt" count="3"/>
+        <line num="212" type="method" name="addOrderByToQuery" visibility="private" complexity="4" crap="4.18" count="3"/>
+        <line num="214" type="stmt" count="3"/>
+        <line num="215" type="stmt" count="1"/>
         <line num="216" type="stmt" count="1"/>
         <line num="217" type="stmt" count="1"/>
-        <line num="218" type="stmt" count="1"/>
-        <line num="220" type="stmt" count="3"/>
-        <line num="222" type="method" name="addAfterToQuery" visibility="private" complexity="3" crap="3" count="3"/>
-        <line num="227" type="stmt" count="3"/>
-        <line num="228" type="stmt" count="1"/>
-        <line num="229" type="stmt" count="1"/>
-        <line num="230" type="stmt" count="1"/>
+        <line num="218" type="stmt" count="0"/>
+        <line num="220" type="stmt" count="1"/>
+        <line num="221" type="stmt" count="0"/>
+        <line num="222" type="stmt" count="1"/>
+        <line num="225" type="stmt" count="3"/>
+        <line num="227" type="method" name="addBeforeToQuery" visibility="private" complexity="3" crap="3" count="3"/>
         <line num="232" type="stmt" count="3"/>
-        <metrics loc="233" ncloc="221" classes="1" methods="12" coveredmethods="8" conditionals="0" coveredconditionals="0" statements="103" coveredstatements="81" elements="115" coveredelements="89"/>
+        <line num="233" type="stmt" count="1"/>
+        <line num="234" type="stmt" count="1"/>
+        <line num="235" type="stmt" count="1"/>
+        <line num="237" type="stmt" count="3"/>
+        <line num="239" type="method" name="addAfterToQuery" visibility="private" complexity="3" crap="3" count="3"/>
+        <line num="244" type="stmt" count="3"/>
+        <line num="245" type="stmt" count="1"/>
+        <line num="246" type="stmt" count="1"/>
+        <line num="247" type="stmt" count="1"/>
+        <line num="249" type="stmt" count="3"/>
+        <metrics loc="250" ncloc="238" classes="1" methods="13" coveredmethods="8" conditionals="0" coveredconditionals="0" statements="112" coveredstatements="81" elements="125" coveredelements="89"/>
       </file>
       <file name="/Users/Dion/www/sexy-field/sexy-field-doctrine/src/SectionField/Service/FetchFieldsQueryBuilder.php">
         <class name="FetchFieldsQueryBuilder" namespace="Tardigrades\SectionField\Service" fullPackage="Tardigrades" package="Tardigrades">
@@ -474,6 +484,6 @@
         <metrics loc="245" ncloc="170" classes="1" methods="8" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="81" coveredstatements="0" elements="89" coveredelements="0"/>
       </file>
     </package>
-    <metrics files="11" loc="1090" ncloc="898" classes="11" methods="37" coveredmethods="19" conditionals="0" coveredconditionals="0" statements="360" coveredstatements="243" elements="397" coveredelements="262"/>
+    <metrics files="11" loc="1107" ncloc="915" classes="11" methods="38" coveredmethods="19" conditionals="0" coveredconditionals="0" statements="369" coveredstatements="243" elements="407" coveredelements="262"/>
   </project>
 </coverage>

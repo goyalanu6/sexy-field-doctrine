@@ -169,20 +169,28 @@ class DoctrineSectionReader implements ReadSectionInterface
                     );
                     $this->queryBuilder->setParameter($handle, $fieldValue);
                 } else {
-                    try {
-                        $this->queryBuilder->innerJoin(
-                            (string)$className . '.' . $handle,
-                            $handle,
-                            'WITH',
-                            $handle . '.id = ' . (string)$fieldValue
-                        );
-                    } catch (\Exception $exception) {
-                        $this->queryBuilder->andWhere(
-                            (string)$className . '.' . (string)$handle . '= :' . $handle
-                        );
-                        $this->queryBuilder->setParameter($handle, (string)$fieldValue);
-                    }
+                    $this->queryBuilder->andWhere(
+                        (string)$className . '.' . (string)$handle . '= :' . $handle
+                    );
+                    $this->queryBuilder->setParameter($handle, (string)$fieldValue);
                 }
+            }
+        }
+    }
+
+    private function addJoinToQuery(
+        array $fields = null,
+        FullyQualifiedClassName $section
+    ) {
+        if (!empty($fields)) {
+            $className = lcfirst((string) $section->getClassName());
+            foreach ($fields as $handle=>$fieldValue) {
+                $this->queryBuilder->innerJoin(
+                    (string)$className . '.' . $handle,
+                    $handle,
+                    'WITH',
+                    $handle . '.id = ' . (string) $fieldValue
+                );
             }
         }
     }
