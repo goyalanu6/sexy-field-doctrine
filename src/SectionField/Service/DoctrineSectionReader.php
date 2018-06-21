@@ -173,10 +173,19 @@ class DoctrineSectionReader implements ReadSectionInterface
                     );
                     $this->queryBuilder->setParameter($handle, $fieldValue);
                 } else {
+                    if (is_null($fieldValue)) {
+                        $assign = ' IS NULL';
+                    } else {
+                        $assign = '= :' . $handle;
+                    }
+
                     $this->queryBuilder->andWhere(
-                        (string)$className . '.' . (string)$handle . '= :' . $handle
+                        (string)$className . '.' . (string)$handle . $assign
                     );
-                    $this->queryBuilder->setParameter($handle, (string)$fieldValue);
+
+                    if (!is_null($fieldValue)) {
+                        $this->queryBuilder->setParameter($handle, (string)$fieldValue);
+                    }
                 }
             }
         }
