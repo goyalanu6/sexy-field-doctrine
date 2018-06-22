@@ -49,22 +49,23 @@ class DoctrineManyToManyGenerator implements GeneratorInterface
             $fromVersion = $from->getVersion()->toInt() > 1 ? ('_' . $from->getVersion()->toInt()) : '';
             $toVersion = $to->getVersion()->toInt() > 1 ? ('_' . $to->getVersion()->toInt()) : '';
 
+            $fromHandle = $fieldConfig['field']['from-handle'] ?? $handle;
             return Template::create(
                 TemplateLoader::load(
-                    (string) $templateDir . '/GeneratorTemplate/doctrine.manytomany.xml.php',
+                    (string)$templateDir . '/GeneratorTemplate/doctrine.manytomany.xml.php',
                     [
                         'type' => $fieldConfig['field']['relationship-type'],
                         'owner' => $fieldConfig['field']['owner'],
                         'toPluralHandle' => Inflector::pluralize(
-                            $fieldConfig['field']['as'] ?? $fieldConfig['field']['to']
-                        ) . $toVersion,
+                                $fieldConfig['field']['as'] ?? $fieldConfig['field']['to']
+                            ) . $toVersion,
                         'toFullyQualifiedClassName' => $to
                             ->getConfig()
                             ->getFullyQualifiedClassName(),
-                        'fromHandle' => (string) $handle . $fromVersion,
+                        'fromHandle' => (string)$fromHandle . $fromVersion,
                         'fromPluralHandle' => Inflector::pluralize(
-                            (string) $handle
-                        ) . $fromVersion,
+                                (string)$fromHandle
+                            ) . $fromVersion,
                         'fromFullyQualifiedClassName' => $sectionConfig
                             ->getFullyQualifiedClassName(),
                         'toHandle' => $fieldConfig['field']['to'] . $toVersion,
