@@ -49,6 +49,7 @@ class DoctrineManyToManyGenerator implements GeneratorInterface
             $fromVersion = $from->getVersion()->toInt() > 1 ? ('_' . $from->getVersion()->toInt()) : '';
             $toVersion = $to->getVersion()->toInt() > 1 ? ('_' . $to->getVersion()->toInt()) : '';
 
+            $fromHandle = $fieldConfig['field']['from-handle'] ?? $handle;
             return Template::create(
                 TemplateLoader::load(
                     (string) $templateDir . '/GeneratorTemplate/doctrine.manytomany.xml.php',
@@ -61,10 +62,10 @@ class DoctrineManyToManyGenerator implements GeneratorInterface
                         'toFullyQualifiedClassName' => $to
                             ->getConfig()
                             ->getFullyQualifiedClassName(),
-                        'fromHandle' => (string) $handle . $fromVersion,
+                        'fromHandle' => (string) $fromHandle . $fromVersion,
                         'fromPluralHandle' => Inflector::pluralize(
-                            (string) $handle
-                        ) . $fromVersion,
+                                (string) $fromHandle
+                            ) . $fromVersion,
                         'fromFullyQualifiedClassName' => $sectionConfig
                             ->getFullyQualifiedClassName(),
                         'toHandle' => $fieldConfig['field']['to'] . $toVersion,
