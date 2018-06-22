@@ -52,19 +52,19 @@ class DoctrineManyToManyGenerator implements GeneratorInterface
             $fromHandle = $fieldConfig['field']['from-handle'] ?? $handle;
             return Template::create(
                 TemplateLoader::load(
-                    (string) $templateDir . '/GeneratorTemplate/doctrine.manytomany.xml.php',
+                    (string)$templateDir . '/GeneratorTemplate/doctrine.manytomany.xml.php',
                     [
                         'type' => $fieldConfig['field']['relationship-type'],
                         'owner' => $fieldConfig['field']['owner'],
                         'toPluralHandle' => Inflector::pluralize(
-                            $fieldConfig['field']['as'] ?? $fieldConfig['field']['to']
-                        ) . $toVersion,
+                                $fieldConfig['field']['as'] ?? $fieldConfig['field']['to']
+                            ) . $toVersion,
                         'toFullyQualifiedClassName' => $to
                             ->getConfig()
                             ->getFullyQualifiedClassName(),
-                        'fromHandle' => (string) $fromHandle . $fromVersion,
+                        'fromHandle' => (string)$fromHandle . $fromVersion,
                         'fromPluralHandle' => Inflector::pluralize(
-                                (string) $fromHandle
+                                (string)$fromHandle
                             ) . $fromVersion,
                         'fromFullyQualifiedClassName' => $sectionConfig
                             ->getFullyQualifiedClassName(),
