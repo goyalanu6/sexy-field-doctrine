@@ -25,10 +25,12 @@ class SectionFieldDoctrineExtension extends Extension
         $loader = new YamlFileLoader(
             $container,
             new FileLocator([
-                __DIR__.'/../config/service'
+                __DIR__.'/../config/service',
+                __DIR__.'/../config'
             ])
         );
 
+        $loader->load('config.yml');
         $loader->load('services.yml');
     }
 }

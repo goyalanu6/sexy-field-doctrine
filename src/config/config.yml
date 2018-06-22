@@ -1,0 +1,5 @@
+doctrine:
+    dbal:
+        # make sure the table for the default caching component
+        # is never thrown away for a migration
+        schema_filter: ~^(?!cache_items)~
