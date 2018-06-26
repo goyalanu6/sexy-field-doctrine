@@ -46,6 +46,12 @@ class DoctrineSectionReader implements ReadSectionInterface
         $this->fetchFieldsQueryBuilder = $fetchFieldsQueryBuilder;
     }
 
+    /**
+     * @param ReadOptionsInterface $readOptions
+     * @param SectionConfig|null $sectionConfig
+     * @return \ArrayIterator
+     * @throws EntryNotFoundException
+     */
     public function read(ReadOptionsInterface $readOptions, SectionConfig $sectionConfig = null): \ArrayIterator
     {
         $fetchFields = $readOptions->getFetchFields();
@@ -53,6 +59,10 @@ class DoctrineSectionReader implements ReadSectionInterface
 
         /** @var FullyQualifiedClassName $section */
         $section = $readOptions->getSection()[0];
+
+        if ($this->fetchFieldsContainsMany($fetchFields, $section)) {
+            $fetchFields = null;
+        }
 
         $formatResult = false;
         if (!is_null($fetchFields)) {
@@ -107,6 +117,47 @@ class DoctrineSectionReader implements ReadSectionInterface
         }
 
         return new \ArrayIterator($results);
+    }
+
+    /**
+     * The fetch fields class is momentarily not ready to handle
+     * to-many relationships, so skip them.
+     *
+     * @todo: Enhance the fetch fields class
+     *
+     * @param array $fetchFields
+     * @param FullyQualifiedClassName $section
+     * @return bool
+     */
+    private function fetchFieldsContainsMany(array $fetchFields, FullyQualifiedClassName $section): bool
+    {
+        $sectionClass = (string) $section;
+        $fields = $sectionClass::FIELDS;
+
+        foreach ($fetchFields as $fetchField) {
+            if (!is_null($this->isManyRelationship($fetchField, $fields))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function isManyRelationship(string $fieldProperty, array $fields): ?string
+    {
+        if (key_exists($fieldProperty, $fields)) {
+            try {
+                switch ($fields[$fieldProperty]['relationship']['kind']) {
+                    case 'one-to-many':
+                    case 'many-to-many':
+                        return $fields[$fieldProperty]['relationship']['class'];
+                }
+            } catch (\Exception $exception) {
+                // Field is no relationship
+            }
+        }
+
+        return null;
     }
 
     private function formatResult(array $results, FullyQualifiedClassName $section): array
@@ -164,27 +215,52 @@ class DoctrineSectionReader implements ReadSectionInterface
         if (!empty($fields)) {
             $className = lcfirst((string) $section->getClassName());
             foreach ($fields as $handle=>$fieldValue) {
-                if (is_array($fieldValue)) {
-                    $this->queryBuilder->andWhere(
-                        $this->queryBuilder->expr()->in(
-                            (string) $className . '.' . (string) $handle,
-                            ':' . $handle
-                        )
+
+                $sectionEntity = (string) $section;
+                $fields = $sectionEntity::FIELDS;
+
+                // If the handle is a MANY relationship, join the table first
+                if ($join = $this->isManyRelationship($handle, $fields)) {
+                    $sectionEntityClass = lcfirst((string) $section->getClassName());
+                    $this->queryBuilder->innerJoin(
+                        $join,
+                        $handle,
+                        'WITH',
+                        $handle . '.' . $sectionEntityClass .' = ' . $sectionEntityClass . '.id'
                     );
-                    $this->queryBuilder->setParameter($handle, $fieldValue);
-                } else {
                     if (is_null($fieldValue)) {
                         $assign = ' IS NULL';
                     } else {
-                        $assign = '= :' . $handle;
+                        $assign = '= :fieldValue';
+                    }
+                    $this->queryBuilder->andWhere((string)$handle . '.id ' . $assign);
+                    if (!is_null($fieldValue)) {
+                        $this->queryBuilder->setParameter('fieldValue', (string)$fieldValue);
                     }
 
-                    $this->queryBuilder->andWhere(
-                        (string)$className . '.' . (string)$handle . $assign
-                    );
+                    // If not a many relationship (so it's a regular field or a one field)
+                } else {
 
-                    if (!is_null($fieldValue)) {
-                        $this->queryBuilder->setParameter($handle, (string)$fieldValue);
+                    // If we have multiple field values, make an IN query
+                    if (is_array($fieldValue)) {
+                        $this->queryBuilder->andWhere(
+                            $this->queryBuilder->expr()->in(
+                                (string)$className . '.' . (string)$handle,
+                                ':' . $handle
+                            )
+                        );
+                        $this->queryBuilder->setParameter($handle, $fieldValue);
+                        // Otherwise, just make a where query
+                    } else {
+                        if (is_null($fieldValue)) {
+                            $assign = ' IS NULL';
+                        } else {
+                            $assign = '= :' . $handle;
+                        }
+                        $this->queryBuilder->andWhere((string)$className . '.' . (string)$handle . $assign);
+                        if (!is_null($fieldValue)) {
+                            $this->queryBuilder->setParameter($handle, (string)$fieldValue);
+                        }
                     }
                 }
             }
