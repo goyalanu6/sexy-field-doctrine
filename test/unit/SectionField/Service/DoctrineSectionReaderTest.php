@@ -144,7 +144,6 @@ final class DoctrineSectionReaderTest extends TestCase
     }
 
     /**
-     * @test
      * @covers ::read
      */
     public function it_reads_everything()
