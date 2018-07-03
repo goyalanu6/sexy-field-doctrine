@@ -61,7 +61,9 @@ class DoctrineSectionReader implements ReadSectionInterface
         $section = $readOptions->getSection()[0];
 
         if (!is_null($fetchFields)) {
-            if ($this->fetchFieldsContainsMany($fetchFields, $section) || !is_null($readOptions->getRelate())) {
+            if ($this->fetchFieldsContainsMany($fetchFields, $section) ||
+                !is_null($readOptions->getRelate())
+            ) {
                 $fetchFields = null;
             }
         }
@@ -239,6 +241,7 @@ class DoctrineSectionReader implements ReadSectionInterface
     ): void {
 
         if (!empty($fields)) {
+
             $className = lcfirst((string) $section->getClassName());
             foreach ($fields as $handle=>$fieldValue) {
 
@@ -250,7 +253,7 @@ class DoctrineSectionReader implements ReadSectionInterface
                 $joinMany = $this->isManyRelationship($handle, $fields);
 
                 // If we are dealing with a ONE relationship, join the table first
-                if (!is_null($joinOne)) {
+                if (!is_null($joinOne) && !is_null($relate)) {
                     $this->addJoinOne($joinOne, $sectionEntityClass, $handle, $fieldValue, $relate);
                 }
 
@@ -259,11 +262,12 @@ class DoctrineSectionReader implements ReadSectionInterface
                     $this->addJoinMany($joinMany, $sectionEntityClass, $handle, $fieldValue, $relate);
                 }
 
-                // If not a relationship (so it's a regular field or a one field)
-                if (is_null($joinOne) && is_null($joinMany)) {
+                // If not a relationship, or not a related one relationship (so it's a regular field or a one field)
+                if ((is_null($joinOne) && is_null($joinMany)) || is_null($relate)) {
 
                     // If we have multiple field values, make an IN query
                     if (is_array($fieldValue)) {
+
                         $this->queryBuilder->andWhere(
                             $this->queryBuilder->expr()->in(
                                 (string) $className . '.' . (string) $handle,
@@ -324,18 +328,20 @@ class DoctrineSectionReader implements ReadSectionInterface
             $relateHandle = '';
         }
 
-        if (is_array($fieldValue)) {
-            $this->queryBuilder->andWhere(
-                $this->queryBuilder->expr()->in(
-                    $relate[0] . (string) $relateHandle,
-                    ':fieldValue'
-                )
-            );
-            $this->queryBuilder->setParameter('fieldValue', $fieldValue);
-        } else {
-            $this->queryBuilder->andWhere($relate[0] . $relateHandle . $assign);
-            if (!is_null($fieldValue)) {
-                $this->queryBuilder->setParameter('fieldValue', (string)$fieldValue);
+        if (!empty($relate)) {
+            if (is_array($fieldValue)) {
+                $this->queryBuilder->andWhere(
+                    $this->queryBuilder->expr()->in(
+                        $relate[0] . (string)$relateHandle,
+                        ':fieldValue'
+                    )
+                );
+                $this->queryBuilder->setParameter('fieldValue', $fieldValue);
+            } else {
+                $this->queryBuilder->andWhere($relate[0] . $relateHandle . $assign);
+                if (!is_null($fieldValue)) {
+                    $this->queryBuilder->setParameter('fieldValue', (string)$fieldValue);
+                }
             }
         }
     }
