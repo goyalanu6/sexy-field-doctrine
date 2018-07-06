@@ -386,7 +386,7 @@ class DoctrineSectionReader implements ReadSectionInterface
         if (is_array($fieldValue)) {
             $this->queryBuilder->andWhere(
                 $this->queryBuilder->expr()->in(
-                    (string) $handle,
+                    $relate[0] . (string) $relateHandle,
                     ':fieldValue'
                 )
             );
