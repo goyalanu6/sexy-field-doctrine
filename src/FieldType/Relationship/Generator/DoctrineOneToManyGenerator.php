@@ -49,13 +49,15 @@ class DoctrineOneToManyGenerator implements GeneratorInterface
             $fromVersion = $from->getVersion()->toInt() > 1 ? ('_' . $from->getVersion()->toInt()) : '';
             $toVersion = $to->getVersion()->toInt() > 1 ? ('_' . $to->getVersion()->toInt()) : '';
 
+            $fromHandle = !empty($fieldConfig['field']['from-handle']) ? $fieldConfig['field']['from-handle'] : $handle;
+
             return Template::create(
                 TemplateLoader::load(
                     (string) $templateDir . '/GeneratorTemplate/doctrine.onetomany.xml.php',
                     [
                         'toPluralHandle' => Inflector::pluralize($toHandle) . $toVersion,
                         'toFullyQualifiedClassName' => $to->getConfig()->getFullyQualifiedClassName(),
-                        'fromHandle' => (string) $handle, // Don't version this one, it's mapped to the entity method.
+                        'fromHandle' => (string) $fromHandle, // Don't version this one, it's mapped to the entity method.
                         'fromPluralHandle' => Inflector::pluralize((string) $handle) . $fromVersion,
                         'toHandle' => $toHandle . $toVersion,
                         'cascade' => $fieldConfig['field']['cascade'] ?? false
