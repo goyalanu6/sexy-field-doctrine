@@ -288,11 +288,13 @@ class DoctrineSectionReader implements ReadSectionInterface
 
                         // Otherwise, just make a where query
                     } else {
-                        if (is_null($fieldValue)) {
+                        if (is_null($fieldValue) || $fieldValue === 'null') {
                             $assign = ' IS NULL';
+                            $fieldValue = null;
                         } else {
                             $assign = '= :' . $handle;
                         }
+
                         $this->queryBuilder->andWhere((string) $className . '.' . (string) $handle . $assign);
                         if (!is_null($fieldValue)) {
                             $this->queryBuilder->setParameter($handle, (string) $fieldValue);
