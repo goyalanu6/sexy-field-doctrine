@@ -268,13 +268,24 @@ class DoctrineSectionReader implements ReadSectionInterface
                     // If we have multiple field values, make an IN query
                     if (is_array($fieldValue)) {
 
+                        $addOrNull = false;
+                        if ($key = array_search('null', $fieldValue) !== false) {
+                            $addOrNull = true;
+                            unset($fieldValue[$key]);
+                        }
+
                         $this->queryBuilder->andWhere(
                             $this->queryBuilder->expr()->in(
                                 (string) $className . '.' . (string) $handle,
                                 ':' . $handle
                             )
                         );
+
+                        if ($addOrNull) {
+                            $this->queryBuilder->orWhere((string)$className . '.' . (string)$handle . ' IS NULL');
+                        }
                         $this->queryBuilder->setParameter($handle, $fieldValue);
+
                         // Otherwise, just make a where query
                     } else {
                         if (is_null($fieldValue)) {
