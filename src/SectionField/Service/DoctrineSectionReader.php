@@ -268,20 +268,33 @@ class DoctrineSectionReader implements ReadSectionInterface
                     // If we have multiple field values, make an IN query
                     if (is_array($fieldValue)) {
 
+                        $addOrNull = false;
+                        if ($key = array_search('null', $fieldValue) !== false) {
+                            $addOrNull = true;
+                            unset($fieldValue[$key]);
+                        }
+
                         $this->queryBuilder->andWhere(
                             $this->queryBuilder->expr()->in(
                                 (string) $className . '.' . (string) $handle,
                                 ':' . $handle
                             )
                         );
+
+                        if ($addOrNull) {
+                            $this->queryBuilder->orWhere((string)$className . '.' . (string)$handle . ' IS NULL');
+                        }
                         $this->queryBuilder->setParameter($handle, $fieldValue);
+
                         // Otherwise, just make a where query
                     } else {
-                        if (is_null($fieldValue)) {
+                        if (is_null($fieldValue) || $fieldValue === 'null') {
                             $assign = ' IS NULL';
+                            $fieldValue = null;
                         } else {
                             $assign = '= :' . $handle;
                         }
+
                         $this->queryBuilder->andWhere((string) $className . '.' . (string) $handle . $assign);
                         if (!is_null($fieldValue)) {
                             $this->queryBuilder->setParameter($handle, (string) $fieldValue);
@@ -386,7 +399,7 @@ class DoctrineSectionReader implements ReadSectionInterface
         if (is_array($fieldValue)) {
             $this->queryBuilder->andWhere(
                 $this->queryBuilder->expr()->in(
-                    (string) $handle,
+                    $relate[0] . (string) $relateHandle,
                     ':fieldValue'
                 )
             );

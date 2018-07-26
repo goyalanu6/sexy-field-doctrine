@@ -8,7 +8,10 @@ use Doctrine\ORM\QueryBuilder;
 use PHPUnit\Framework\TestCase;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Tardigrades\SectionField\Generator\CommonSectionInterface;
 use Tardigrades\SectionField\ValueObject\Before;
+use Tardigrades\SectionField\ValueObject\FullyQualifiedClassName;
 use Tardigrades\SectionField\ValueObject\SectionConfig;
 
 /**
@@ -19,13 +22,13 @@ final class DoctrineSectionReaderTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
-    /** @var EntityManagerInterface|Mockery\Mock */
+    /** @var EntityManagerInterface|Mockery\MockInterface */
     private $entityManager;
 
-    /** @var QueryBuilder|Mockery\Mock */
+    /** @var QueryBuilder|Mockery\MockInterface */
     private $queryBuilder;
 
-    /** @var FetchFieldsQueryBuilder|Mockery\Mock */
+    /** @var FetchFieldsQueryBuilder|Mockery\MockInterface */
     private $fetchFieldsQueryBuilder;
 
     public function setUp()
@@ -144,16 +147,16 @@ final class DoctrineSectionReaderTest extends TestCase
     }
 
     /**
-     * @test
      * @covers ::read
      */
     public function it_reads_everything()
     {
         $date = new \DateTime('2017-10-21T15:03');
+
         $optionData = [
             'id' => 1,
             'slug' => 'section-one',
-            'section' => ['section One'],
+            'section' => [ FullyQualifiedClassName::fromString('This\\Is\\SectionOne') ],
             'sectionId' => 2,
             'limit' => 3,
             'offset' => 4,
@@ -175,6 +178,7 @@ final class DoctrineSectionReaderTest extends TestCase
                 'namespace' => 'namespace'
             ]
         ];
+
         $reader = new DoctrineSectionReader($this->entityManager, $this->fetchFieldsQueryBuilder);
         $sectionConfig = SectionConfig::fromArray($configData);
         $readOptions = ReadOptions::fromArray($optionData);
@@ -188,11 +192,11 @@ final class DoctrineSectionReaderTest extends TestCase
 
         $this->queryBuilder->shouldReceive('select')
             ->once()
-            ->with('section One');
+            ->with('sectionOne');
 
         $this->queryBuilder->shouldReceive('from')
             ->once()
-            ->with('section One', 'section One');
+            ->with('This\\Is\\SectionOne', 'sectionOne');
 
         $this->queryBuilder->shouldReceive('where')
             ->times(4);
@@ -222,7 +226,7 @@ final class DoctrineSectionReaderTest extends TestCase
 
         $this->queryBuilder->shouldReceive('orderBy')
             ->once()
-            ->with('section One.some', 'asc');
+            ->with('sectionOne.some', 'asc');
 
         $this->queryBuilder->shouldReceive('setParameter')
             ->once()
