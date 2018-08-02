@@ -10,15 +10,12 @@ class Where implements ComponentInterface
 {
     public static function add(
         QueryBuilder $query,
-        \ArrayIterator $structure
+        array $structure
     ): void {
         if ($structure['where']) {
             foreach ($structure['where'] as $where) {
-                /** @var FullyQualifiedClassName $fullyQualifiedClassName */
-                $fullyQualifiedClassName = $where['fullyQualifiedClassName'];
                 if (!is_array($where['parameters']['value'])) {
                     $query->andWhere(
-                        $fullyQualifiedClassName->getClassName() . '.' .
                         $where['parameters']['property'] . ' = :' .
                         $where['parameters']['key']
                     );
@@ -26,7 +23,7 @@ class Where implements ComponentInterface
                 } else {
                     $query->andWhere(
                         $query->expr()->in(
-                            $fullyQualifiedClassName->getClassName() . '.' . $where['parameters']['property'],
+                            $where['parameters']['property'],
                             ':' . $where['parameters']['key']
                         )
                     );

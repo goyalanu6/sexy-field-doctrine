@@ -7,9 +7,9 @@ namespace Tardigrades\SectionField\QueryComponents;
 use Doctrine\ORM\QueryBuilder;
 use Tardigrades\SectionField\ValueObject\FullyQualifiedClassName;
 
-class ManyToOne implements ComponentInterface
+class OneToOne implements ComponentInterface
 {
-    const MANY_TO_ONE = 'many-to-one';
+    const ONE_TO_ONE = 'one-to-one';
 
     public static function add(
         QueryBuilder $query,

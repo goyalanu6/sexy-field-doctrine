@@ -9,6 +9,6 @@ interface ComponentInterface
 {
     public static function add(
         QueryBuilder $query,
-        \ArrayIterator $structure
+        array $structure
     ): void;
 }

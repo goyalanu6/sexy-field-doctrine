@@ -9,10 +9,10 @@ use Tardigrades\SectionField\ValueObject\FullyQualifiedClassName;
 
 class From implements ComponentInterface
 {
-    public static function add(QueryBuilder $query, \ArrayIterator $structure): void
+    public static function add(QueryBuilder $query, array $structure): void
     {
         /** @var FullyQualifiedClassName $section */
         $section = $structure['from'];
-        $query->from((string) $section, $section->getClassName());
+        $query->from((string) $section, lcfirst($section->getClassName()));
     }
 }

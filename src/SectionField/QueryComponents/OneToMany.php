@@ -9,15 +9,15 @@ use Tardigrades\SectionField\ValueObject\FullyQualifiedClassName;
 
 class OneToMany implements ComponentInterface
 {
+    const ONE_TO_MANY = 'one-to-many';
+
     public static function add(
         QueryBuilder $query,
-        \ArrayIterator $structure
+        array $relationship
     ): void {
-        if (!empty($structure['one-to-many'])) {
-            /** @var FullyQualifiedClassName $relate */
-            foreach ($structure['one-to-many'] as $relate) {
-                $query->leftJoin((string) $relate, $relate->getClassName());
-            }
-        }
+        $query->leftJoin(
+            (string)$relationship['to'],
+            $relationship['as']
+        );
     }
 }

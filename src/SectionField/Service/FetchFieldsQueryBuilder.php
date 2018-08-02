@@ -196,15 +196,17 @@ class FetchFieldsQueryBuilder
                         }
                         $this->reflections[$className]['fields'][] = ['propertyName' => $property->getName()];
                         try {
-                            $section = $this->sectionManager->readByHandle(Handle::fromString(lcfirst($docComment)));
-                            end($this->reflections[$className]['fields']);
-                            $key = key($this->reflections[$className]['fields']);
-                            $this->reflections[$className]['fields'][$key]['relatedToSection'] = $docComment;
-                            $this->buildReflections(
-                                $section->getConfig()->getFullyQualifiedClassName(),
-                                $fetchFields,
-                                $depth++
-                            );
+                            if (lcfirst($docComment) !== 'string' && lcfirst($docComment) !== '\DateTime') {
+                                $section = $this->sectionManager->readByHandle(Handle::fromString(lcfirst($docComment)));
+                                end($this->reflections[$className]['fields']);
+                                $key = key($this->reflections[$className]['fields']);
+                                $this->reflections[$className]['fields'][$key]['relatedToSection'] = $docComment;
+                                $this->buildReflections(
+                                    $section->getConfig()->getFullyQualifiedClassName(),
+                                    $fetchFields,
+                                    $depth++
+                                );
+                            }
                         } catch (SectionNotFoundException $exception) {
                             // Just go on
                         }

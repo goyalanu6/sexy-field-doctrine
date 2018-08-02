@@ -9,15 +9,13 @@ use Tardigrades\SectionField\ValueObject\FullyQualifiedClassName;
 
 class ManyToMany implements ComponentInterface
 {
+    const MANY_TO_MANY = 'many-to-many';
+
     public static function add(
         QueryBuilder $query,
-        \ArrayIterator $structure
+        array $relationship
     ): void {
-        if (!empty($structure['many-to-many'])) {
-            /** @var FullyQualifiedClassName $relate */
-            foreach ($structure['many-to-many'] as $relate) {
-                $query->join((string) $relate, $relate->getClassName());
-            }
-        }
+
+        $query->join((string) $relate, $relate->getClassName());
     }
 }
