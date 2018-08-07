@@ -12,11 +12,11 @@ class Select implements ComponentInterface
         QueryBuilder $query,
         array $structure
     ): void {
-        if (!empty($structure['select'])) {
-            foreach ($structure['select'] as $select) {
+        if (!empty($structure[QueryStructure::SELECT])) {
+            foreach ($structure[QueryStructure::SELECT] as $select) {
                 $add = $select['alias'];
-                if (!empty($select['handle'])) {
-                    $add .= $select['handle'];
+                if (!empty($select[QueryStructure::HANDLE])) {
+                    $add .= $select[QueryStructure::HANDLE];
                 }
                 $query->addSelect($add);
             }

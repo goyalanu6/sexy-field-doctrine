@@ -78,7 +78,7 @@ class QuerySectionReader
         Offset::add($this->queryBuilder, $structure);
         OrderBy::add($this->queryBuilder, $structure);
 
-        $results = $this->getResults();
+//        $results = $this->getResults();
 
         return new \ArrayIterator([]);
     }

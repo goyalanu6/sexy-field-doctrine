@@ -234,11 +234,22 @@ class QueryStructure implements QueryStructureInterface
     ): void {
         foreach ($entityProperties as $fieldProperty => $field) {
             if (in_array($fieldProperty, $fetchFields) && empty($field['relationship'])) {
-                $handle = lcfirst($as) . '.' . $fieldProperty;
-                $handle = $handle . ' AS ' . str_replace('.', '_', $handle);
-                $select = [ 'handle' => $handle ];
-                if (!in_array($select, $this->structure[self::SELECT])) {
-                    $this->structure[self::SELECT][] = $select;
+
+                // Make sure the FQCN is in the getFields() of the entity, allowing for third parties
+                // to have their own namespaces
+                $fieldType = 'Tardigrades\\FieldType\\' . $field['type'] . '\\' . $field['type'] . 'Query';
+
+                $fieldProperties = [$fieldProperty];
+                if (class_exists($fieldType) && method_exists($fieldType, 'select')) {
+                    $fieldProperties = $fieldType::select($fieldProperty);
+                }
+                foreach ($fieldProperties as $fieldProperty) {
+                    $handle = lcfirst($as) . '.' . $fieldProperty;
+                    $handle = $handle . ' AS ' . str_replace('.', '_', $handle);
+                    $select = [self::HANDLE => $handle];
+                    if (!in_array($select, $this->structure[self::SELECT])) {
+                        $this->structure[self::SELECT][] = $select;
+                    }
                 }
             }
         }

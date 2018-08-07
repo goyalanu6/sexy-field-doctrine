@@ -359,7 +359,8 @@ DQL;
 
         $expected = <<<'DQL'
             SELECT 
-                participantSession.participantSessionAppointmentDate AS participantSession_participantSessionAppointmentDate, 
+                participantSession.participantSessionAppointmentDate AS participantSession_participantSessionAppointmentDate,
+                participantSession.participantSessionAppointmentDateTimezone AS participantSession_participantSessionAppointmentDateTimezone,
                 participantSession.uuid AS participantSession_uuid, 
                 consultant.uuid AS consultant_uuid, 
                 accountHasRole.uuid AS accountHasRole_uuid, 
