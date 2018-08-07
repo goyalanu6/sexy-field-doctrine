@@ -15,7 +15,9 @@ class ManyToMany implements ComponentInterface
         QueryBuilder $query,
         array $relationship
     ): void {
-
-        $query->join((string) $relate, $relate->getClassName());
+        $query->join(
+            lcfirst($relationship[QueryStructure::FROM]->getClassName()) . '.' . $relationship[QueryStructure::AS],
+            lcfirst($relationship[QueryStructure::TO]->getClassName())
+        );
     }
 }

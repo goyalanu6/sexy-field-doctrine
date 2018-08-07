@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Tardigrades\SectionField\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Tardigrades\SectionField\QueryComponents\From;
+use Tardigrades\SectionField\QueryComponents\Limit;
 use Tardigrades\SectionField\QueryComponents\ManyToMany;
 use Tardigrades\SectionField\QueryComponents\ManyToOne;
+use Tardigrades\SectionField\QueryComponents\Offset;
 use Tardigrades\SectionField\QueryComponents\OneToMany;
 use Tardigrades\SectionField\QueryComponents\OneToOne;
+use Tardigrades\SectionField\QueryComponents\OrderBy;
 use Tardigrades\SectionField\QueryComponents\QueryStructure;
 use Tardigrades\SectionField\QueryComponents\QueryStructureInterface;
 use Tardigrades\SectionField\QueryComponents\Select;
@@ -72,12 +74,17 @@ class QuerySectionReader
             }
         }
         Where::add($this->queryBuilder, $structure);
+        Limit::add($this->queryBuilder, $structure);
+        Offset::add($this->queryBuilder, $structure);
+        OrderBy::add($this->queryBuilder, $structure);
+
+        $results = $this->getResults();
 
         return new \ArrayIterator([]);
     }
 
-    public function getDQL(): string
+    private function getResults(): array
     {
-        return $this->queryBuilder->getDQL();
+        return $this->queryBuilder->getQuery()->getResult();
     }
 }

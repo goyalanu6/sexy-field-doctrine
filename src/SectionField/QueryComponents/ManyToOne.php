@@ -19,9 +19,7 @@ class ManyToOne implements ComponentInterface
             (string) $relationship[QueryStructure::TO],
             $relationship[QueryStructure::AS],
             'WITH',
-            !empty($relationship['condition']) ?
-                $relationship['condition'] :
-                $relationship[QueryStructure::AS] . ' = ' . lcfirst($relationship[QueryStructure::FROM]->getClassName()) . '.' . $relationship[QueryStructure::AS]
+            $relationship[QueryStructure::CONDITION]
         );
     }
 }

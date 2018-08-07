@@ -3,6 +3,7 @@ declare (strict_types=1);
 
 namespace Tardigrades\SectionField\QueryComponents;
 
+use Tardigrades\SectionField\Service\ReadOptions;
 use Tardigrades\SectionField\Service\ReadOptionsInterface;
 use Tardigrades\SectionField\ValueObject\FullyQualifiedClassName;
 use Tardigrades\SectionField\ValueObject\Id;
@@ -29,7 +30,14 @@ class QueryStructure implements QueryStructureInterface
     const SLUG_FIELDS = 'slugFields';
     const WHERE = 'where';
     const SELECT = 'select';
+    const HANDLE = 'handle';
+    const CONDITION = 'condition';
 
+    /**
+     * @param ReadOptionsInterface $readOptions
+     * @param SectionConfig|null $sectionConfig
+     * @return array
+     */
     public function get(
         ReadOptionsInterface $readOptions,
         SectionConfig $sectionConfig = null
@@ -41,20 +49,27 @@ class QueryStructure implements QueryStructureInterface
         /** @var array $fetchFields */
         $fetchFields = $this->readOptions->getFetchFields();
         $field = $this->readOptions->getField();
-        $fieldHandle = explode(':', key($field));
         $sectionFQCN = (string) $this->section;
+
         $this->structure[self::FROM] = $this->section;
         $this->structure[self::RELATIONSHIP] = [];
         $this->structure[self::SLUG_FIELDS] = [];
+        $this->structure[self::SELECT] = [];
+        $this->structure[ReadOptions::LIMIT] = $this->readOptions->getLimit();
+        $this->structure[ReadOptions::OFFSET] = $this->readOptions->getOffset();
+        $this->structure[ReadOptions::ORDER_BY] = $this->readOptions->getOrderBy();
 
-        // The field handle may exist of several properties.
-        // Whereas the last one is the field, and everything before are relationships.
-        // For example: If we have: 'project:product:slug'. Project and product are
-        // relationships, and the slug is the slug of product.
-        // So add the first two to the fetchFields.
-        foreach ($fieldHandle as $key=>$propertyName) {
-            if ($key <= count($fieldHandle) - 2 && !in_array($propertyName, $fetchFields)) {
-                $fetchFields[] = $propertyName;
+        if (!is_null($field)) {
+            // The field handle may exist of several properties.
+            // Whereas the last one is the field, and everything before are relationships.
+            // For example: If we have: 'project:product:slug'. Project and product are
+            // relationships, and the slug is the slug of product.
+            // So add the first two to the fetchFields.
+            $fieldHandle = explode(':', key($field));
+            foreach ($fieldHandle as $key => $propertyName) {
+                if ($key <= count($fieldHandle) - 2 && !in_array($propertyName, $fetchFields)) {
+                    $fetchFields[] = $propertyName;
+                }
             }
         }
 
@@ -63,11 +78,11 @@ class QueryStructure implements QueryStructureInterface
             $this->aliasRelationships();
             $this->orderRelationships();
             $this->findSelect($fetchFields, $sectionFQCN);
+            $this->addSlugFields();
         } else {
-            $this->structure[self::SELECT][] = [
-                'fullyQualifiedClassName' => $this->section,
-                'handle' => ''
-            ];
+            $handle = lcfirst($this->section->getClassName()) . '.*';
+            $select = [ self::HANDLE => $handle ];
+            $this->structure[self::SELECT][] = $select;
         }
 
         $this->addWhere();
@@ -94,7 +109,6 @@ class QueryStructure implements QueryStructureInterface
             lcfirst($fullyQualifiedClassName->getClassName())
         ] = $this->findSlugField($entityProperties);
 
-        // Add relationships first
         $this->addRelationship(
             $entityProperties,
             $fetchFields,
@@ -111,10 +125,7 @@ class QueryStructure implements QueryStructureInterface
     private function findSelect(
         array $fetchFields,
         string $fullyQualifiedClassName
-    ) {
-        if (empty($this->structure[self::SELECT])) {
-            $this->structure[self::SELECT] = [];
-        }
+    ): void {
 
         $this->addSelect(
             $fullyQualifiedClassName::getFields(),
@@ -129,29 +140,47 @@ class QueryStructure implements QueryStructureInterface
         }
     }
 
+    private function addSlugFields(): void
+    {
+        foreach ($this->structure[self::SLUG_FIELDS] as $property=>$slugField) {
+            $this->structure[self::SELECT][] = [
+                self::HANDLE => $property . '.' . $slugField . ' AS ' . $property . '_' . $slugField
+            ];
+        }
+    }
+
     /**
      * Some relationships are complicated in the sense that they are related
      * over several levels of depth and aliassed, figure that out.
      */
     private function aliasRelationships(): void
     {
+        $removeSlug = null;
         foreach ($this->structure[self::RELATIONSHIP] as $index => $relationship) {
             $as = $this->findAsByTo($relationship[self::FROM]);
             if (count($as) > 1 && !isset($relationship['dynamic'])) {
                 foreach ($as as $key => $alias) {
                     $newRelationship = [
-                        'from' => $relationship[self::FROM],
-                        'to' => $relationship[self::TO],
-                        'as' => $alias . $relationship[self::TO]->getClassName(),
-                        'kind' => $relationship[self::KIND],
-                        'dynamic' => true,
-                        'condition' => $alias . $relationship[self::TO]->getClassName() . ' = ' . $alias
+                        self::FROM => $relationship[self::FROM],
+                        self::TO => $relationship[self::TO],
+                        self::AS => $alias . '_' .lcfirst($relationship[self::TO]->getClassName()),
+                        self::KIND => $relationship[self::KIND],
+                        self::CONDITION => $alias . '_' . lcfirst($relationship[self::TO]->getClassName()) . ' = ' . $alias,
+                        'dynamic' => true
                     ];
                     if (!in_array($newRelationship, $this->structure[self::RELATIONSHIP])) {
                         $this->structure[self::RELATIONSHIP][] = $newRelationship;
+                        $original = lcfirst($relationship[self::TO]->getClassName());
+                        // @todo: Only if fetch fields contains slug that is.
+                        $this->structure[self::SLUG_FIELDS][$newRelationship[self::AS]] =
+                            $this->structure[self::SLUG_FIELDS][$original];
+                        $removeSlug = $original;
                     }
                 }
                 unset($this->structure[self::RELATIONSHIP][$index]);
+                if (!is_null($removeSlug)) {
+                    unset($this->structure[self::SLUG_FIELDS][$removeSlug]);
+                }
             }
         }
     }
@@ -163,6 +192,11 @@ class QueryStructure implements QueryStructureInterface
         });
     }
 
+    /**
+     * @param array $entityProperties
+     * @param array $fetchFields
+     * @param FullyQualifiedClassName $fullyQualifiedClassName
+     */
     private function addRelationship(
         array $entityProperties,
         array $fetchFields,
@@ -176,7 +210,8 @@ class QueryStructure implements QueryStructureInterface
                     self::FROM => $fullyQualifiedClassName,
                     self::TO => $to,
                     self::AS => $fieldProperty,
-                    self::KIND => $kind
+                    self::KIND => $kind,
+                    self::CONDITION => $fieldProperty . ' = ' . lcfirst($fullyQualifiedClassName->getClassName()) . '.' . $fieldProperty
                 ];
                 if (!in_array($relationship, $this->structure[self::RELATIONSHIP])) {
                     $this->structure[self::RELATIONSHIP][$fieldProperty] = $relationship;
@@ -187,6 +222,11 @@ class QueryStructure implements QueryStructureInterface
         }
     }
 
+    /**
+     * @param array $entityProperties
+     * @param array $fetchFields
+     * @param string $as
+     */
     private function addSelect(
         array $entityProperties,
         array $fetchFields,
@@ -197,7 +237,7 @@ class QueryStructure implements QueryStructureInterface
                 $handle = lcfirst($as) . '.' . $fieldProperty;
                 $handle = $handle . ' AS ' . str_replace('.', '_', $handle);
                 $select = [ 'handle' => $handle ];
-                if (!in_array($select, $this->structure['select'])) {
+                if (!in_array($select, $this->structure[self::SELECT])) {
                     $this->structure[self::SELECT][] = $select;
                 }
             }
@@ -294,6 +334,10 @@ class QueryStructure implements QueryStructureInterface
         }
     }
 
+    /**
+     * @param FullyQualifiedClassName $to
+     * @return array
+     */
     private function findAsByTo(FullyQualifiedClassName $to): array
     {
         $result = [];
@@ -305,6 +349,10 @@ class QueryStructure implements QueryStructureInterface
         return $result;
     }
 
+    /**
+     * @param array $entityProperties
+     * @return null|string
+     */
     private function findSlugField(array $entityProperties): ?string
     {
         // It will add the real slug handles to the fetch fields
