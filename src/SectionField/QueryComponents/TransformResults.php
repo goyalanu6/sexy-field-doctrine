@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tardigrades\SectionField\QueryComponents;
 
-class TransformResults
+class TransformResults implements TransformResultsInterface
 {
     public function intoHierarchy(array $results): array
     {

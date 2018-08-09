@@ -17,34 +17,50 @@ use Tardigrades\SectionField\QueryComponents\OrderBy;
 use Tardigrades\SectionField\QueryComponents\QueryStructure;
 use Tardigrades\SectionField\QueryComponents\QueryStructureInterface;
 use Tardigrades\SectionField\QueryComponents\Select;
+use Tardigrades\SectionField\QueryComponents\TransformResultsInterface;
 use Tardigrades\SectionField\QueryComponents\Where;
 use Tardigrades\SectionField\ValueObject\SectionConfig;
 
-class QuerySectionReader
+/**
+ * Class QuerySectionReader
+ *
+ * This will build one query for getting data from the database as opposed
+ * to the default lazy_loading system that will make many queries to do the same.
+ *
+ * @package Tardigrades\SectionField\Service
+ */
+class QuerySectionReader implements ReadSectionInterface
 {
     /** @var EntityManagerInterface */
     private $entityManager;
 
-    /** @var \Doctrine\ORM\QueryBuilder */
-    private $queryBuilder;
-
     /** @var QueryStructureInterface */
     private $queryStructure;
 
+    /** @var TransformResultsInterface */
+    private $transform;
+
+    /** @var \Doctrine\ORM\QueryBuilder */
+    private $queryBuilder;
+
     /**
      * QuerySectionReader constructor.
+     *
      * @param EntityManagerInterface $entityManager
-     * @param QueryBuilder $queryBuilder
      * @param QueryStructureInterface $queryStructure
+     * @param TransformResultsInterface $transform
+     * @param QueryBuilder $queryBuilder
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        QueryBuilder $queryBuilder = null,
-        QueryStructureInterface $queryStructure
+        QueryStructureInterface $queryStructure,
+        TransformResultsInterface $transform,
+        QueryBuilder $queryBuilder = null
     ) {
         $this->entityManager = $entityManager;
-        $this->queryBuilder = $queryBuilder;
         $this->queryStructure = $queryStructure;
+        $this->transform = $transform;
+        $this->queryBuilder = $queryBuilder;
 
         if (is_null($queryBuilder)) {
             $this->queryBuilder = $this->entityManager->createQueryBuilder();
@@ -78,9 +94,11 @@ class QuerySectionReader
         Offset::add($this->queryBuilder, $structure);
         OrderBy::add($this->queryBuilder, $structure);
 
-//        $results = $this->getResults();
-
-        return new \ArrayIterator([]);
+        return new \ArrayIterator(
+            $this->transform->intoHierarchy(
+                $this->getResults()
+            )
+        );
     }
 
     private function getResults(): array
