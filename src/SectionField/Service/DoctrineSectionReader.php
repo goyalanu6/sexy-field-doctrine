@@ -61,7 +61,7 @@ class DoctrineSectionReader implements ReadSectionInterface
         $section = $readOptions->getSection()[0];
 
         if (!is_null($fetchFields)) {
-            if ($this->fetchFieldsContainsMany($fetchFields, $section) ||
+            if ($this->fetchFieldsContainsMany($fetchFields, $section) &&
                 !is_null($readOptions->getRelate())
             ) {
                 $fetchFields = null;
