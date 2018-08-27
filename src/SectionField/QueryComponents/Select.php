@@ -14,11 +14,7 @@ class Select implements ComponentInterface
     ): void {
         if (!empty($structure[QueryStructure::SELECT])) {
             foreach ($structure[QueryStructure::SELECT] as $select) {
-                $add = $select['alias'];
-                if (!empty($select[QueryStructure::HANDLE])) {
-                    $add .= $select[QueryStructure::HANDLE];
-                }
-                $query->addSelect($add);
+                $query->addSelect($select[QueryStructure::HANDLE]);
             }
         }
     }

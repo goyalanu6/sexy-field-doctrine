@@ -95,9 +95,9 @@ class QuerySectionReader implements ReadSectionInterface
         OrderBy::add($this->queryBuilder, $structure);
 
         return new \ArrayIterator(
-            $this->transform->intoHierarchy(
-                $this->getResults()
-            )
+//            $this->transform->intoHierarchy(
+//                $this->getResults()
+//            )
         );
     }
 

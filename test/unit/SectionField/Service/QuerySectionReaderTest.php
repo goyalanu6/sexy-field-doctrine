@@ -10,6 +10,7 @@ use Doctrine\ORM\Query\Expr;
 use PHPUnit\Framework\TestCase;
 use Mockery;
 use Tardigrades\SectionField\QueryComponents\QueryStructure;
+use Tardigrades\SectionField\QueryComponents\TransformResultsInterface;
 use Tardigrades\SectionField\ValueObject\SectionConfig;
 use Tardigrades\SectionField\ValueObject\Sort;
 
@@ -31,6 +32,9 @@ final class QuerySectionReaderTest extends TestCase
     /** @var QueryBuilder */
     private $queryBuilder;
 
+    /** @var TransformResultsInterface|Mockery\MockInterface */
+    private $transform;
+
     use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
     public function setUp(): void
@@ -39,11 +43,13 @@ final class QuerySectionReaderTest extends TestCase
         $queryStructure = new QueryStructure();
         $this->queryBuilder = new QueryBuilder($this->entityManager);
         $this->expressionBuilder = new Expr();
+        $this->transform = Mockery::mock(TransformResultsInterface::class);
 
         $this->querySectionReader = new QuerySectionReader(
             $this->entityManager,
-            $this->queryBuilder,
-            $queryStructure
+            $queryStructure,
+            $this->transform,
+            $this->queryBuilder
         );
     }
 
