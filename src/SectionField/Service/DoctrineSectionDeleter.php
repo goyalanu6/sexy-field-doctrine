@@ -37,4 +37,14 @@ class DoctrineSectionDeleter implements DeleteSectionInterface
         }
         return true;
     }
+
+    public function remove(CommonSectionInterface $sectionEntryEntity): void
+    {
+        $this->entityManager->remove($sectionEntryEntity);
+    }
+
+    public function flush(): void
+    {
+        $this->entityManager->flush();
+    }
 }

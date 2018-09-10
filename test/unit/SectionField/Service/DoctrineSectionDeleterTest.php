@@ -19,9 +19,13 @@ final class DoctrineSectionDeleterTest extends TestCase
     /** @var EntityManagerInterface|Mockery\Mock */
     private $entityManager;
 
+    /** @var DoctrineSectionDeleter */
+    private $deleter;
+
     public function setUp()
     {
         $this->entityManager = Mockery::mock(EntityManagerInterface::class);
+        $this->deleter = new DoctrineSectionDeleter($this->entityManager);
     }
 
     /**
@@ -74,5 +78,26 @@ final class DoctrineSectionDeleterTest extends TestCase
         $deleter = new DoctrineSectionDeleter($this->entityManager);
 
         $this->assertFalse($deleter->delete($deleted));
+    }
+
+    /**
+     * @test
+     * @covers ::remove
+     */
+    public function it_removes()
+    {
+        $entry = Mockery::mock('alias:Tardigrades\SectionField\Generator\CommonSectionInterface')->makePartial();
+        $this->entityManager->shouldReceive('remove')->with($entry)->once();
+        $this->deleter->remove($entry);
+    }
+
+    /**
+     * @test
+     * @covers ::flush
+     */
+    public function it_flushes()
+    {
+        $this->entityManager->shouldReceive('flush')->once();
+        $this->deleter->flush();
     }
 }
