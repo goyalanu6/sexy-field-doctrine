@@ -15,6 +15,7 @@ namespace Tardigrades\SectionField\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use Tardigrades\SectionField\Generator\CommonSectionInterface;
 use Tardigrades\SectionField\ValueObject\Slug;
 use Tardigrades\SectionField\ValueObject\After;
 use Tardigrades\SectionField\ValueObject\Before;
@@ -136,7 +137,7 @@ class DoctrineSectionReader implements ReadSectionInterface
     private function fetchFieldsContainsMany(array $fetchFields, FullyQualifiedClassName $section): bool
     {
         $sectionClass = (string) $section;
-        $fields = $sectionClass::FIELDS;
+        $fields = $sectionClass::fieldInfo();
         foreach ($fetchFields as $fetchField) {
             if (!is_null($this->isManyRelationship($fetchField, $fields))) {
                 return true;
@@ -246,7 +247,7 @@ class DoctrineSectionReader implements ReadSectionInterface
             foreach ($fields as $handle=>$fieldValue) {
 
                 $sectionEntity = (string) $section;
-                $fields = $sectionEntity::FIELDS;
+                $fields = $sectionEntity::fieldInfo();
                 $sectionEntityClass = lcfirst((string) $section->getClassName());
 
                 $joinOne = $this->isOneRelationship($handle, $fields);
@@ -328,7 +329,7 @@ class DoctrineSectionReader implements ReadSectionInterface
         }
 
         try {
-            $relateTo = $join::FIELDS[$relate[0]]['relationship']['class'];
+            $relateTo = $join::fieldInfo()[$relate[0]]['relationship']['class'];
             $relateHandle = $this->getRelateHandle($relate, $relateTo);
             $this->queryBuilder->leftJoin(
                 $relateTo,
@@ -383,7 +384,7 @@ class DoctrineSectionReader implements ReadSectionInterface
         }
 
         try {
-            $relateTo = $join::FIELDS[$relate[0]]['relationship']['class'];
+            $relateTo = $join::fieldInfo()[$relate[0]]['relationship']['class'];
             $relateHandle = $this->getRelateHandle($relate, $relateTo);
             $this->queryBuilder->leftJoin(
                 $relateTo,
@@ -418,7 +419,7 @@ class DoctrineSectionReader implements ReadSectionInterface
         if (!empty($relate[1])) {
             $relateHandle = '.' . $relate[1];
             if ($relate[1] === 'slug') {
-                $relateHandle = '.' . $this->findSlugfield($relateTo::FIELDS);
+                $relateHandle = '.' . $this->findSlugfield($relateTo::fieldInfo());
             }
         }
         return $relateHandle;
