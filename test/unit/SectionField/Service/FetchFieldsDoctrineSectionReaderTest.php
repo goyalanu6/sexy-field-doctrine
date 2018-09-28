@@ -31,9 +31,9 @@ final class FetchFieldsDoctrineSectionReaderTest extends TestCase
     {
         $readOptions = ReadOptions::fromArray([
             ReadOptions::SECTION => \TestNS\Product::class,
-            ReadOptions::FETCH_FIELDS => 'slug,prices,price,currency,product',
+            ReadOptions::FETCH_FIELDS => 'slug,price,currency,product',
             ReadOptions::LIMIT => 5,
-            ReadOptions::ORDER_BY => ['product:prices:price' => 'ASC']
+            ReadOptions::ORDER_BY => ['prices:price' => 'ASC']
         ]);
         $expected = static::normalize(<<<'DQL'
             SELECT
