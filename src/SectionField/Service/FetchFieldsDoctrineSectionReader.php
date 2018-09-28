@@ -82,7 +82,11 @@ class FetchFieldsDoctrineSectionReader implements ReadSectionInterface
                 function (string $queryField): array {
                     return static::tail(explode(':', $queryField));
                 },
-                array_keys($options[ReadOptions::FIELD])
+                array_merge(
+                    array_keys($options[ReadOptions::FIELD]),
+                    array_key_exists(ReadOptions::ORDER_BY, $options) ?
+                        array_keys($options[ReadOptions::ORDER_BY]) : []
+                )
             )
         );
         $fields = array_unique($fields);
@@ -206,7 +210,10 @@ class FetchFieldsDoctrineSectionReader implements ReadSectionInterface
         }
 
         if (array_key_exists(ReadOptions::ORDER_BY, $options)) {
-            $builder->orderBy(key($options[ReadOptions::ORDER_BY]), current($options[ReadOptions::ORDER_BY]));
+            $builder->orderBy(
+                static::simplifyClass($root) . ':' . key($options[ReadOptions::ORDER_BY]),
+                current($options[ReadOptions::ORDER_BY])
+            );
         }
 
         return $builder;
