@@ -35,11 +35,19 @@ class FetchFieldsDoctrineSectionReader implements ReadSectionInterface
         $this->entityManager = $entityManager;
     }
 
+    /**
+     * @param ReadOptionsInterface $options
+     * @param SectionConfig|null $sectionConfig
+     * @return \ArrayIterator
+     * @throws EntryNotFoundException
+     */
     public function read(ReadOptionsInterface $options, SectionConfig $sectionConfig = null): \ArrayIterator
     {
-        return new \ArrayIterator(
-            $this->buildQuery($options)->getQuery()->getResult()
-        );
+        $results = $this->buildQuery($options)->getQuery()->getResult();
+        if (count($results) === 0) {
+            throw new EntryNotFoundException;
+        }
+        return new \ArrayIterator($results);
     }
 
     /**
@@ -47,13 +55,18 @@ class FetchFieldsDoctrineSectionReader implements ReadSectionInterface
      * It's a bit slower.
      * @param ReadOptionsInterface $options
      * @return \ArrayIterator
+     * @throws EntryNotFoundException
      */
     public function readNested(ReadOptionsInterface $options): \ArrayIterator
     {
+        $results = $this->buildQuery($options)->getQuery()->getResult();
+        if (count($results) === 0) {
+            throw new EntryNotFoundException;
+        }
         return new \ArrayIterator(
             array_map(
                 'static::makeNested',
-                $this->buildQuery($options)->getQuery()->getResult()
+                $results
             )
         );
     }
@@ -106,6 +119,7 @@ class FetchFieldsDoctrineSectionReader implements ReadSectionInterface
          * the current entity in the chain.
          */
         $queue = [[['field' => static::simplifyClass($root), 'class' => $root]]];
+        $didSelect = false;
         while ($queue) {
             $entityPath = array_shift($queue);
             if (count($entityPath) > 5 || static::hasDuplicates($entityPath)) {
@@ -121,37 +135,9 @@ class FetchFieldsDoctrineSectionReader implements ReadSectionInterface
             $name = static::implodeEntityPath($entityPath);
 
             if (count($entityPath) > 1) {
-                $kind = $pathEnd['kind'];
-                $owner = $pathEnd['owner'];
                 // Because this is not the root entity, add a join
                 $parentName = static::implodeEntityPath(static::tail($entityPath));
-                if ($owner) {
-                    $condition = "{$name} = {$parentName}.{$fieldName}";
-                } elseif ($kind === 'one-to-many' || $kind === 'one-to-one') {
-                    // The parent doesn't own the relationship, so we need to specify the join using the field
-                    // on the current class, which we need to find
-                    $parentClass = static::end(static::tail($entityPath))['class'];
-                    $fieldName = null;
-                    foreach ($classMetadata as $key => $value) {
-                        if ($value['relationship'] !== null && $value['relationship']['class'] === $parentClass
-                            && !$value['relationship']['plural'] && $value['relationship']['owner']) {
-                            $fieldName = $key;
-                            break;
-                        }
-                    }
-                    if (is_null($fieldName)) {
-                        throw new InvalidFetchFieldsQueryException(
-                            "Couldn't find the inverse side of $parentClass::{$pathEnd['field']} on $class"
-                        );
-                    }
-                    $condition = "{$parentName} = {$name}.{$fieldName}";
-                } else {
-                    // Many-to-many relationships are not supported
-                    // Unfortunately, throwing an exception is not an option here, because this case might be
-                    // triggered by included fields that made sense on other entities
-                    continue;
-                }
-                $builder->leftJoin($class, $name, 'WITH', $condition);
+                $builder->leftJoin("$parentName.$fieldName", $name);
             }
             foreach ($fields as $field) {
                 if ($field === 'slug') {
@@ -160,20 +146,23 @@ class FetchFieldsDoctrineSectionReader implements ReadSectionInterface
                 if (array_key_exists($field, $classMetadata)) {
                     $fieldInfo = $classMetadata[$field];
                     if (is_null($fieldInfo['relationship'])) {
+                        $didSelect = true;
                         $builder->addSelect("{$name}.{$field} AS {$name}:{$field}");
                     } else {
                         // This field points to a related entity, so add another join to the queue
                         $newEntityPath = $entityPath;
                         $newEntityPath[] = [
                             'field' => $field,
-                            'class' => $fieldInfo['relationship']['class'],
-                            'kind' => $fieldInfo['relationship']['kind'],
-                            'owner' => $fieldInfo['relationship']['owner']
+                            'class' => $fieldInfo['relationship']['class']
                         ];
                         $queue[] = $newEntityPath;
                     }
                 }
             }
+        }
+
+        if (!$didSelect) {
+            throw new InvalidFetchFieldsQueryException("Could not find any of the fields");
         }
 
         $wheres = [];
@@ -215,7 +204,6 @@ class FetchFieldsDoctrineSectionReader implements ReadSectionInterface
                 current($options[ReadOptions::ORDER_BY])
             );
         }
-
         return $builder;
     }
 
