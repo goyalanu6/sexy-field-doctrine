@@ -27,10 +27,10 @@ use Tardigrades\SectionField\ValueObject\SectionConfig;
  */
 class FetchFieldsDoctrineSectionReader implements ReadSectionInterface
 {
-    /** @var ORM\EntityManager */
+    /** @var ORM\EntityManagerInterface */
     private $entityManager;
 
-    public function __construct(ORM\EntityManager $entityManager)
+    public function __construct(ORM\EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
     }
@@ -40,6 +40,11 @@ class FetchFieldsDoctrineSectionReader implements ReadSectionInterface
         return new \ArrayIterator(
             $this->buildQuery($options)->getQuery()->getResult()
         );
+    }
+
+    public function flush(): void
+    {
+        $this->entityManager->flush();
     }
 
     /**

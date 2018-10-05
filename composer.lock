@@ -4280,12 +4280,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dionsnoeijen/sexy-field.git",
-                "reference": "a2ba7d3d2492c322ca2f2ee421ddafb24654ead4"
+                "reference": "ad276d029dde7539a3a42fee102ad09abf2d8c93"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dionsnoeijen/sexy-field/zipball/a2ba7d3d2492c322ca2f2ee421ddafb24654ead4",
-                "reference": "a2ba7d3d2492c322ca2f2ee421ddafb24654ead4",
+                "url": "https://api.github.com/repos/dionsnoeijen/sexy-field/zipball/ad276d029dde7539a3a42fee102ad09abf2d8c93",
+                "reference": "ad276d029dde7539a3a42fee102ad09abf2d8c93",
                 "shasum": ""
             },
             "require": {
@@ -4330,7 +4330,7 @@
                 }
             ],
             "description": "SexyField helps you build application structure and accompanying forms.",
-            "time": "2018-09-24T11:12:27+00:00"
+            "time": "2018-10-05T11:05:50+00:00"
         },
         {
             "name": "theseer/tokenizer",
