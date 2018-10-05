@@ -124,6 +124,11 @@ class DoctrineSectionReader implements ReadSectionInterface
         return new \ArrayIterator($results);
     }
 
+    public function flush(): void
+    {
+        $this->entityManager->flush();
+    }
+
     /**
      * The fetch fields class is momentarily not ready to handle
      * to-many relationships, so skip them.

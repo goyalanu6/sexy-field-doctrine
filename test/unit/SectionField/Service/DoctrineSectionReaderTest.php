@@ -242,4 +242,14 @@ final class DoctrineSectionReaderTest extends TestCase
 
         $reader->read($readOptions, $sectionConfig);
     }
+
+    /**
+     * @test
+     * @covers ::flush
+     */
+    public function it_flushes()
+    {
+        $this->entityManager->shouldReceive('flush')->once();
+        (new DoctrineSectionReader($this->entityManager, $this->fetchFieldsQueryBuilder))->flush();
+    }
 }
