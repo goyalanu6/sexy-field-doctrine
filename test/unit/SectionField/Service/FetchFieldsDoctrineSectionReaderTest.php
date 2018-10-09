@@ -15,6 +15,8 @@ use PHPUnit\Framework\TestCase;
  */
 final class FetchFieldsDoctrineSectionReaderTest extends TestCase
 {
+    use m\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
     /** @var ORM\Entitymanager|m\Mock */
     private $entityManager;
 
@@ -42,7 +44,7 @@ final class FetchFieldsDoctrineSectionReaderTest extends TestCase
               product:prices.price AS product:prices:price,
               product:prices.currency AS product:prices:currency
             FROM TestNS\Product product
-            LEFT JOIN TestNS\Price product:prices WITH product = product:prices.product
+            LEFT JOIN product.prices product:prices
             ORDER BY product:prices:price ASC
 DQL
         );
@@ -64,7 +66,7 @@ DQL
               price:product.productSlug AS price:product:productSlug,
               price:product.name AS price:product:name
             FROM TestNS\Price price
-            LEFT JOIN TestNS\Product price:product WITH price:product = price.product
+            LEFT JOIN price.product price:product
 DQL
         );
 
@@ -141,17 +143,16 @@ DQL
         );
     }
 
-    // phpcs:ignore Generic.Files.LineLength
     /**
      * @expectedException \Tardigrades\SectionField\Service\InvalidFetchFieldsQueryException
-     * @expectedExceptionMessage inverse side of TestNS\MalformedRelationshipA::foo on TestNS\MalformedRelationshipB
+     * @expectedExceptionMessage Could not find any of the fields
      */
-    public function testThatItFailsIfNeitherSideOwnsARelationship(): void
+    public function testThatItFailsWhenSelectingOnlyInvalidFields(): void
     {
         $this->reader->buildQuery(
             ReadOptions::fromArray([
-                ReadOptions::SECTION => \TestNS\MalformedRelationshipA::class,
-                ReadOptions::FETCH_FIELDS => 'foo'
+                ReadOptions::SECTION => \TestNS\Product::class,
+                ReadOptions::FETCH_FIELDS => 'not,real,fields'
             ])
         );
     }
@@ -335,33 +336,6 @@ class Status
 }
 
 class Slugless
-{
-    public static function fieldInfo(): array
-    {
-        return [];
-    }
-}
-
-class MalformedRelationshipA
-{
-    public static function fieldInfo(): array
-    {
-        return [
-            'foo' => [
-                'handle' => 'foo',
-                'type' => 'Relationship',
-                'relationship' => [
-                    'class' => 'TestNS\\MalformedRelationshipB',
-                    'plural' => false,
-                    'kind' => 'one-to-one',
-                    'owner' => false
-                ]
-            ]
-        ];
-    }
-}
-
-class MalformedRelationshipB
 {
     public static function fieldInfo(): array
     {
