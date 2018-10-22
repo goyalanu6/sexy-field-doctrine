@@ -33,6 +33,21 @@ class DoctrineFieldGenerator implements GeneratorInterface
             $asString
         );
 
+        $fieldConfig = $field->getConfig()->toArray();
+
+        $unique = false;
+        try {
+            $unique = $fieldConfig['field']['generator']['doctrine']['unique'];
+        } catch (\Exception $exception) {
+            // Unique not defined
+        }
+
+        $asString = str_replace(
+            '{{ unique }}',
+            $unique ? 'unique="true" ' : '',
+            $asString
+        );
+
         return Template::create($asString);
     }
 }

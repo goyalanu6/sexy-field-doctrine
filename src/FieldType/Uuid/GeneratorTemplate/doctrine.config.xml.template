@@ -1,1 +1,1 @@
-<field name="{{ handle }}" nullable="true" length="36" type="string" />
+<field name="{{ handle }}" nullable="true" length="36" type="string" {{ unique }}/>
