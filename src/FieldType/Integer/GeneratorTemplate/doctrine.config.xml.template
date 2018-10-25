@@ -1,1 +1,1 @@
-<field name="{{ handle }}" nullable="true" type="integer" />
+<field name="{{ handle }}" nullable="true" type="integer" {{ unique }}/>
