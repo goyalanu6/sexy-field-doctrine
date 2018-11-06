@@ -61,13 +61,9 @@ class DoctrineConfigGenerator extends Generator implements GeneratorInterface
         foreach ($fields as $field) {
 
             // First see if this field is to be ignored by this generator
-            try {
-                $fieldConfig = $field->getConfig()->getGeneratorConfig()->toArray();
-                if (!empty($fieldConfig[self::GENERATE_FOR]['ignore']) ||
-                    $fieldConfig[self::GENERATE_FOR]['ignore']) {
-                    continue;
-                }
-            } catch (\Exception $exception) {}
+            if ($this->shouldIgnore($field)) {
+                continue;
+            }
 
             $parsed = $this->getFieldTypeGeneratorConfig($field, self::GENERATE_FOR);
 

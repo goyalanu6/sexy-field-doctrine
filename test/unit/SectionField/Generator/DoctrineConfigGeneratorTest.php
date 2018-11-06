@@ -79,7 +79,7 @@ final class DoctrineConfigGeneratorTest extends TestCase
 
         $fieldType = Mockery::mock(FieldTypeInterface::class);
         $fieldType->shouldReceive('getFieldTypeGeneratorConfig')
-            ->once()
+            ->twice()
             ->andReturn($fieldtypeConfigDoctrine);
         $fieldType->shouldReceive('getFullyQualifiedClassName')
             ->andReturn(FullyQualifiedClassName::fromString('\My\Namespace\Field'));
@@ -97,7 +97,7 @@ final class DoctrineConfigGeneratorTest extends TestCase
             ->andReturn($sectionOne);
 
         $this->container->shouldReceive('get')
-            ->twice()
+            ->times(3)
             ->andReturn($fieldType);
 
         $writable = $this->generator->generateBySection($sectionOne);
@@ -149,7 +149,7 @@ EOT;
 
         $fieldType = Mockery::mock(FieldTypeInterface::class);
         $fieldType->shouldReceive('getFieldTypeGeneratorConfig')
-            ->once()
+            ->twice()
             ->andReturn($fieldtypeConfigDoctrine);
         $fieldType->shouldReceive('getFullyQualifiedClassName')
             ->andReturn(FullyQualifiedClassName::fromString('\My\Namespace\Field'));
@@ -163,7 +163,7 @@ EOT;
             ->andReturn([$fieldOne]);
 
         $this->container->shouldReceive('get')
-            ->once()
+            ->twice()
             ->andReturn($fieldType);
 
         $writable = $this->generator->generateBySection($sectionOne);
@@ -193,7 +193,7 @@ EOT;
 
         $fieldType = Mockery::mock(FieldTypeInterface::class);
         $fieldType->shouldReceive('getFieldTypeGeneratorConfig')
-            ->once()
+            ->twice()
             ->andReturn($fieldtypeConfigDoctrine);
         $fieldType->shouldReceive('getFullyQualifiedClassName')
             ->andReturn(FullyQualifiedClassName::fromString('\My\Namespace\Field'));
@@ -206,7 +206,7 @@ EOT;
             ->andReturn([$fieldOne]);
 
         $this->container->shouldReceive('get')
-            ->twice()
+            ->times(3)
             ->andReturn($fieldType);
 
         $writable = $this->generator->generateBySection($sectionOne);
