@@ -57,8 +57,7 @@ class DoctrineSectionReader implements ReadSectionInterface
     {
         $query = $readOptions->getQuery();
         if (!is_null($query)) {
-            $query = $this->entityManager->createQuery($query);
-            $results = $query->getResult();
+            $results = $this->manualQuery($readOptions);
             if (count($results) <= 0) {
                 throw new EntryNotFoundException();
             }
@@ -517,5 +516,25 @@ class DoctrineSectionReader implements ReadSectionInterface
             $this->queryBuilder->where($className. '.' . (string) $createdField . ' > :after');
             $this->queryBuilder->setParameter('after', (string) $after);
         }
+    }
+
+    /**
+     * @param ReadOptionsInterface $readOptions
+     * @return \ArrayIterator
+     */
+    private function manualQuery(ReadOptionsInterface $readOptions): \ArrayIterator
+    {
+        $query = $readOptions->getQuery();
+        $query = $this->entityManager->createQuery($query);
+        $limit = $readOptions->getLimit();
+        if ($limit instanceof Limit) {
+            $query->setMaxResults($limit->toInt());
+        }
+        $offset = $readOptions->getOffset();
+        if ($offset instanceof Offset) {
+            $this->queryBuilder->setFirstResult($offset->toInt());
+        }
+        $results = $query->getResult();
+        return new \ArrayIterator((array) $results);
     }
 }
