@@ -55,6 +55,16 @@ class DoctrineSectionReader implements ReadSectionInterface
      */
     public function read(ReadOptionsInterface $readOptions, SectionConfig $sectionConfig = null): \ArrayIterator
     {
+        $query = $readOptions->getQuery();
+        if (!is_null($query)) {
+            $query = $this->entityManager->createQuery($query);
+            $results = $query->getResult();
+            if (count($results) <= 0) {
+                throw new EntryNotFoundException();
+            }
+            return new \ArrayIterator((array) $results);
+        }
+
         $fetchFields = $readOptions->getFetchFields();
         $this->queryBuilder = $this->entityManager->createQueryBuilder();
 
