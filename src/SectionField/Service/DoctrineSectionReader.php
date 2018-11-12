@@ -526,6 +526,8 @@ class DoctrineSectionReader implements ReadSectionInterface
     {
         $query = $readOptions->getQuery();
         $query = $this->entityManager->createQuery($query);
+        $query->setParameters($readOptions->getQueryParameters());
+
         $limit = $readOptions->getLimit();
         if ($limit instanceof Limit) {
             $query->setMaxResults($limit->toInt());
