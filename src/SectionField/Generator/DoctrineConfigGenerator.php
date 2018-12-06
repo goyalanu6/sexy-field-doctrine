@@ -42,8 +42,11 @@ class DoctrineConfigGenerator extends Generator implements GeneratorInterface
         $this->section = $section;
         $this->sectionConfig = $section->getConfig();
 
-        if (isset($this->sectionConfig->toArray()['section']['generator']['doctrine']['ignore']) &&
-            $this->sectionConfig->toArray()['section']['generator']['doctrine']['ignore']) {
+        $ignored = false;
+        try {
+            $ignored = $this->sectionConfig->toArray()['section']['generator']['doctrine']['ignore'];
+        } catch (\Throwable $throwable) {}
+        if ($ignored) {
             throw new IgnoredSectionException();
         }
 
