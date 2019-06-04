@@ -13,22 +13,28 @@ declare (strict_types=1);
 
 namespace Tardigrades\SectionField\Service;
 
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Tardigrades\SectionField\Generator\CommonSectionInterface;
+use Tardigrades\SectionField\ValueObject\FullyQualifiedClassName;
 
-class DoctrineSectionDeleter implements DeleteSectionInterface
+class DoctrineSectionDeleter extends Doctrine implements DeleteSectionInterface
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
     public function __construct(
-        EntityManagerInterface $entityManager
+        Registry $registry
     ) {
-        $this->entityManager = $entityManager;
+        parent::__construct($registry);
     }
 
+    /**
+     * @param CommonSectionInterface $sectionEntryEntity
+     * @return bool
+     * @throws NoEntityManagerFoundForSection
+     */
     public function delete(CommonSectionInterface $sectionEntryEntity): bool
     {
+        $this->determineEntityManager(
+            FullyQualifiedClassName::fromString(get_class($sectionEntryEntity))
+        );
         try {
             $this->entityManager->remove($sectionEntryEntity);
             $this->entityManager->flush();
@@ -38,13 +44,22 @@ class DoctrineSectionDeleter implements DeleteSectionInterface
         return true;
     }
 
+    /**
+     * @param CommonSectionInterface $sectionEntryEntity
+     * @throws NoEntityManagerFoundForSection
+     */
     public function remove(CommonSectionInterface $sectionEntryEntity): void
     {
+        $this->determineEntityManager(
+            FullyQualifiedClassName::fromString(get_class($sectionEntryEntity))
+        );
         $this->entityManager->remove($sectionEntryEntity);
     }
 
     public function flush(): void
     {
+        // This assumes the entity managers has been determined before
+        // by calling remove before flushing.
         $this->entityManager->flush();
     }
 }

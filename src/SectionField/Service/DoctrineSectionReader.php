@@ -13,9 +13,8 @@ declare (strict_types=1);
 
 namespace Tardigrades\SectionField\Service;
 
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\QueryBuilder;
-use Tardigrades\SectionField\Generator\CommonSectionInterface;
 use Tardigrades\SectionField\ValueObject\Slug;
 use Tardigrades\SectionField\ValueObject\After;
 use Tardigrades\SectionField\ValueObject\Before;
@@ -28,11 +27,8 @@ use Tardigrades\SectionField\ValueObject\OrderBy;
 use Tardigrades\SectionField\ValueObject\SectionConfig;
 use Tardigrades\SectionField\ValueObject\SlugField;
 
-class DoctrineSectionReader implements ReadSectionInterface
+class DoctrineSectionReader extends Doctrine implements ReadSectionInterface
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
     /** @var QueryBuilder */
     private $queryBuilder;
 
@@ -40,13 +36,20 @@ class DoctrineSectionReader implements ReadSectionInterface
     private $fetchFieldsQueryBuilder;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
+        Registry $registry,
         FetchFieldsQueryBuilder $fetchFieldsQueryBuilder
     ) {
-        $this->entityManager = $entityManager;
         $this->fetchFieldsQueryBuilder = $fetchFieldsQueryBuilder;
+        parent::__construct($registry);
     }
 
+    /**
+     * @param ReadOptionsInterface $readOptions
+     * @param SectionConfig|null $sectionConfig
+     * @return \ArrayIterator
+     * @throws EntryNotFoundException
+     * @throws NoEntityManagerFoundForSection
+     */
     public function read(ReadOptionsInterface $readOptions, SectionConfig $sectionConfig = null): \ArrayIterator
     {
         $query = $readOptions->getQuery();
@@ -57,12 +60,12 @@ class DoctrineSectionReader implements ReadSectionInterface
             }
             return new \ArrayIterator((array) $results);
         }
+        /** @var FullyQualifiedClassName $section */
+        $section = $readOptions->getSection()[0];
+        $this->determineEntityManager($section);
 
         $fetchFields = $readOptions->getFetchFields();
         $this->queryBuilder = $this->entityManager->createQueryBuilder();
-
-        /** @var FullyQualifiedClassName $section */
-        $section = $readOptions->getSection()[0];
 
         if (!is_null($fetchFields)) {
             if ($this->fetchFieldsContainsMany($fetchFields, $section) &&

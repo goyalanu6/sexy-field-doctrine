@@ -24,6 +24,7 @@
   },
   "require-dev": {
     "tardigrades/sexy-field": "dev-master",
+    "doctrine/doctrine-bundle": "^1.6",
     "phpunit/phpunit": "^6.1",
     "squizlabs/PHP_CodeSniffer": "^3.1",
     "mockery/mockery": "^0.9.9",

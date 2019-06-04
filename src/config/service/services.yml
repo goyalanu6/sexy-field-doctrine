@@ -22,7 +22,7 @@ services:
 
   Tardigrades\SectionField\Service\DoctrineSectionReader:
     arguments:
-      - '@doctrine.orm.entity_manager'
+      - '@doctrine'
       - '@section_field.doctrine.fetch_fields_query_builder'
 
   section_field.doctrine.read.section: '@Tardigrades\SectionField\Service\DoctrineSectionReader'
