@@ -3,6 +3,8 @@ declare (strict_types=1);
 
 namespace Tardigrades\SectionField\Service;
 
+use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Mockery;
@@ -22,10 +24,14 @@ final class DoctrineSectionDeleterTest extends TestCase
     /** @var DoctrineSectionDeleter */
     private $deleter;
 
+    /** @var Registry|Mockery\MockInterface */
+    private $registry;
+
     public function setUp()
     {
         $this->entityManager = Mockery::mock(EntityManagerInterface::class);
-        $this->deleter = new DoctrineSectionDeleter($this->entityManager);
+        $this->registry = Mockery::mock(Registry::class);
+        $this->deleter = new DoctrineSectionDeleter($this->registry, $this->entityManager);
     }
 
     /**
@@ -34,7 +40,7 @@ final class DoctrineSectionDeleterTest extends TestCase
      */
     public function it_creates()
     {
-        $deleter = new DoctrineSectionDeleter($this->entityManager);
+        $deleter = new DoctrineSectionDeleter($this->registry);
         $this->assertInstanceOf(DoctrineSectionDeleter::class, $deleter);
     }
 
@@ -46,6 +52,8 @@ final class DoctrineSectionDeleterTest extends TestCase
     {
         $deleted = Mockery::mock('alias:Tardigrades\SectionField\Generator\CommonSectionInterface')->makePartial();
 
+        $this->givenWeHaveAValidEntityAssignedToAManager();
+
         $this->entityManager->shouldReceive('remove')
             ->once()
             ->with($deleted)
@@ -54,7 +62,7 @@ final class DoctrineSectionDeleterTest extends TestCase
         $this->entityManager->shouldReceive('flush')
             ->andReturn(true);
 
-        $deleter = new DoctrineSectionDeleter($this->entityManager);
+        $deleter = new DoctrineSectionDeleter($this->registry, $this->entityManager);
 
         $this->assertTrue($deleter->delete($deleted));
     }
@@ -67,6 +75,8 @@ final class DoctrineSectionDeleterTest extends TestCase
     {
         $deleted = Mockery::mock('alias:Tardigrades\SectionField\Generator\CommonSectionInterface')->makePartial();
 
+        $this->givenWeHaveAValidEntityAssignedToAManager();
+
         $this->entityManager->shouldReceive('remove')
             ->once()
             ->with($deleted)
@@ -75,7 +85,7 @@ final class DoctrineSectionDeleterTest extends TestCase
         $this->entityManager->shouldReceive('flush')
             ->never();
 
-        $deleter = new DoctrineSectionDeleter($this->entityManager);
+        $deleter = new DoctrineSectionDeleter($this->registry);
 
         $this->assertFalse($deleter->delete($deleted));
     }
@@ -87,6 +97,9 @@ final class DoctrineSectionDeleterTest extends TestCase
     public function it_removes()
     {
         $entry = Mockery::mock('alias:Tardigrades\SectionField\Generator\CommonSectionInterface')->makePartial();
+
+        $this->givenWeHaveAValidEntityAssignedToAManager();
+
         $this->entityManager->shouldReceive('remove')->with($entry)->once();
         $this->deleter->remove($entry);
     }
@@ -99,5 +112,24 @@ final class DoctrineSectionDeleterTest extends TestCase
     {
         $this->entityManager->shouldReceive('flush')->once();
         $this->deleter->flush();
+    }
+
+
+    private function givenWeHaveAValidEntityAssignedToAManager()
+    {
+        $configuration = Mockery::mock(Configuration::class);
+        $configuration->shouldReceive('getEntityNamespaces')
+            ->once()
+            ->andReturn(['Tardigrades\SectionField\Generator\CommonSectionInterface']);
+
+        $this->entityManager->shouldReceive('getConfiguration')
+            ->once()
+            ->andReturn($configuration);
+
+        $this->registry->shouldReceive('getManagers')
+            ->once()
+            ->andReturn([
+                $this->entityManager
+            ]);
     }
 }

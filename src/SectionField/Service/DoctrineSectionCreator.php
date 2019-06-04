@@ -14,14 +14,18 @@ declare (strict_types=1);
 namespace Tardigrades\SectionField\Service;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\ORM\EntityManagerInterface;
 use Tardigrades\SectionField\Generator\CommonSectionInterface;
 use Tardigrades\SectionField\ValueObject\FullyQualifiedClassName;
 
 class DoctrineSectionCreator extends Doctrine implements CreateSectionInterface
 {
     public function __construct(
-        Registry $registry
+        Registry $registry,
+        EntityManagerInterface $entityManager = null
     ) {
+        // This allows for unit testing
+        $this->entityManager = $entityManager;
         parent::__construct($registry);
     }
 
@@ -48,7 +52,7 @@ class DoctrineSectionCreator extends Doctrine implements CreateSectionInterface
         $this->entityManager->persist($data);
     }
 
-    public function flush()
+    public function flush(): void
     {
         // This assumes the entity managers has been determined before
         // by calling persist before flushing.

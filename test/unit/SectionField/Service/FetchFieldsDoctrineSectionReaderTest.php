@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Tardigrades\SectionField\Service;
 
+use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\ORM\Configuration;
 use Mockery as m;
 use Doctrine\ORM;
 use PHPUnit\Framework\TestCase;
@@ -23,10 +25,14 @@ final class FetchFieldsDoctrineSectionReaderTest extends TestCase
     /** @var FetchFieldsDoctrineSectionReader */
     private $reader;
 
+    /** @var Registry|m\MockInterface */
+    private $registry;
+
     protected function setUp()
     {
         $this->entityManager = m::mock(ORM\EntityManager::class)->makePartial();
-        $this->reader = new FetchFieldsDoctrineSectionReader($this->entityManager);
+        $this->registry = m::mock(Registry::class);
+        $this->reader = new FetchFieldsDoctrineSectionReader($this->registry);
     }
 
     public function testOneToManyJoins(): void
@@ -37,6 +43,9 @@ final class FetchFieldsDoctrineSectionReaderTest extends TestCase
             ReadOptions::LIMIT => 5,
             ReadOptions::ORDER_BY => ['prices:price' => 'ASC']
         ]);
+
+        $this->givenWeHaveAValidEntityAssignedToAManager(\TestNS\Product::class);
+
         $expected = static::normalize(<<<'DQL'
             SELECT
               product.productSlug AS product:productSlug,
@@ -60,6 +69,9 @@ DQL
             ReadOptions::SECTION => \TestNS\Price::class,
             ReadOptions::FETCH_FIELDS => 'slug,product,name'
         ]);
+
+        $this->givenWeHaveAValidEntityAssignedToAManager(\TestNS\Price::class);
+
         $expected = static::normalize(<<<'DQL'
             SELECT
               price.priceSlug AS price:priceSlug,
@@ -81,6 +93,9 @@ DQL
             ReadOptions::FIELD => ['name' => ['Space Frikandel', 'Ongewokkel']],
             ReadOptions::FETCH_FIELDS => 'name,slug'
         ]);
+
+        $this->givenWeHaveAValidEntityAssignedToAManager(\TestNS\Product::class);
+
         $expected = static::normalize(<<< DQL
             SELECT
               product.name AS product:name,
@@ -102,6 +117,9 @@ DQL
             ReadOptions::SLUG => 'ikbeneenproduct',
             ReadOptions::FETCH_FIELDS => 'name'
         ]);
+
+        $this->givenWeHaveAValidEntityAssignedToAManager(\TestNS\Product::class);
+
         $expected = static::normalize(<<< DQL
             SELECT
               product.name AS product:name
@@ -121,6 +139,8 @@ DQL
      */
     public function testThatItFailsOnASluglessClass(): void
     {
+        $this->givenWeHaveAValidEntityAssignedToAManager(\TestNS\Slugless::class);
+
         $this->reader->buildQuery(
             ReadOptions::fromArray([
                 ReadOptions::SECTION => \TestNS\Slugless::class,
@@ -135,6 +155,8 @@ DQL
      */
     public function testThatItFailsWhenNotSelectingFields(): void
     {
+        $this->givenWeHaveAValidEntityAssignedToAManager(\TestNS\Product::class);
+
         $this->reader->buildQuery(
             ReadOptions::fromArray([
                 ReadOptions::SECTION => \TestNS\Product::class,
@@ -149,6 +171,8 @@ DQL
      */
     public function testThatItFailsWhenSelectingOnlyInvalidFields(): void
     {
+        $this->givenWeHaveAValidEntityAssignedToAManager(\TestNS\Product::class);
+
         $this->reader->buildQuery(
             ReadOptions::fromArray([
                 ReadOptions::SECTION => \TestNS\Product::class,
@@ -183,6 +207,25 @@ DQL
     private static function normalize(string $query): string
     {
         return trim(preg_replace('/\\s\\s+/', ' ', $query));
+    }
+
+
+    private function givenWeHaveAValidEntityAssignedToAManager(string $namespace)
+    {
+        $configuration = m::mock(Configuration::class);
+        $configuration->shouldReceive('getEntityNamespaces')
+            ->once()
+            ->andReturn([$namespace]);
+
+        $this->entityManager->shouldReceive('getConfiguration')
+            ->once()
+            ->andReturn($configuration);
+
+        $this->registry->shouldReceive('getManagers')
+            ->once()
+            ->andReturn([
+                $this->entityManager
+            ]);
     }
 }
 

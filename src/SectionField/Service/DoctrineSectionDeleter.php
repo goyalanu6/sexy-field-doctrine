@@ -14,14 +14,17 @@ declare (strict_types=1);
 namespace Tardigrades\SectionField\Service;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\ORM\EntityManagerInterface;
 use Tardigrades\SectionField\Generator\CommonSectionInterface;
 use Tardigrades\SectionField\ValueObject\FullyQualifiedClassName;
 
 class DoctrineSectionDeleter extends Doctrine implements DeleteSectionInterface
 {
     public function __construct(
-        Registry $registry
+        Registry $registry,
+        EntityManagerInterface $entityManager = null
     ) {
+        $this->entityManager = $entityManager;
         parent::__construct($registry);
     }
 

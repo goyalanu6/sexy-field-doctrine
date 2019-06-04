@@ -20,7 +20,7 @@ use Tardigrades\SectionField\ValueObject\FullyQualifiedClassName;
 abstract class Doctrine
 {
     /** @var EntityManagerInterface */
-    protected $entityManager;
+    protected $entityManager = null;
 
     /** @var Registry */
     protected $doctrine;
@@ -28,12 +28,11 @@ abstract class Doctrine
     public function __construct(Registry $registry)
     {
         $this->doctrine = $registry;
-        $this->entityManager = null;
     }
 
     /**
-     * We may have multiple entity managers defined, determin which one we need for
-     * the section we are requesting
+     * We may have multiple entity managers defined, determine which
+     * one we need for the section we are requesting
      *
      * @param FullyQualifiedClassName $section
      * @throws NoEntityManagerFoundForSection
@@ -41,9 +40,11 @@ abstract class Doctrine
     protected function determineEntityManager(FullyQualifiedClassName $section)
     {
         $managers = $this->doctrine->getManagers();
+
         /** @var EntityManagerInterface $manager */
         foreach ($managers as $manager) {
-            foreach ($manager->getConfiguration()->getEntityNamespaces() as $namespace) {
+            $namespaces = $manager->getConfiguration()->getEntityNamespaces();
+            foreach ($namespaces as $namespace) {
                 if (strpos((string)$section, $namespace) === 0) {
                     $this->entityManager = $manager;
                 }

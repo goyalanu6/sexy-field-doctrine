@@ -14,6 +14,7 @@ declare (strict_types=1);
 namespace Tardigrades\SectionField\Service;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Tardigrades\SectionField\ValueObject\Slug;
 use Tardigrades\SectionField\ValueObject\After;
@@ -37,9 +38,11 @@ class DoctrineSectionReader extends Doctrine implements ReadSectionInterface
 
     public function __construct(
         Registry $registry,
-        FetchFieldsQueryBuilder $fetchFieldsQueryBuilder
+        FetchFieldsQueryBuilder $fetchFieldsQueryBuilder,
+        EntityManagerInterface $entityManager = null
     ) {
         $this->fetchFieldsQueryBuilder = $fetchFieldsQueryBuilder;
+        $this->entityManager = $entityManager;
         parent::__construct($registry);
     }
 
@@ -132,6 +135,8 @@ class DoctrineSectionReader extends Doctrine implements ReadSectionInterface
 
     public function flush(): void
     {
+        // This assumes the entity managers has been determined before
+        // by calling persist before flushing.
         $this->entityManager->flush();
     }
 

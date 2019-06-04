@@ -16,7 +16,7 @@ services:
 
   Tardigrades\SectionField\Service\DoctrineSectionCreator:
     arguments:
-      - '@doctrine.orm.entity_manager'
+      - '@doctrine'
 
   section_field.doctrine.create.section: '@Tardigrades\SectionField\Service\DoctrineSectionCreator'
 
@@ -29,11 +29,11 @@ services:
 
   Tardigrades\SectionField\Service\DoctrineSectionDeleter:
     arguments:
-      - '@doctrine.orm.entity_manager'
+      - '@doctrine'
 
   Tardigrades\SectionField\Service\FetchFieldsDoctrineSectionReader:
     arguments:
-      - '@doctrine.orm.entity_manager'
+      - '@doctrine'
 
   section_field.doctrine.delete.section: '@Tardigrades\SectionField\Service\DoctrineSectionDeleter'
 
