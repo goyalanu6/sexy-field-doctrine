@@ -4,6 +4,7 @@ declare (strict_types=1);
 namespace Tardigrades\SectionField\Service;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use PHPUnit\Framework\TestCase;
