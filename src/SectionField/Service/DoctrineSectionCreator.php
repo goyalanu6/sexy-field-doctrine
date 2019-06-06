@@ -13,33 +13,49 @@ declare (strict_types=1);
 
 namespace Tardigrades\SectionField\Service;
 
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\EntityManagerInterface;
 use Tardigrades\SectionField\Generator\CommonSectionInterface;
+use Tardigrades\SectionField\ValueObject\FullyQualifiedClassName;
 
-class DoctrineSectionCreator implements CreateSectionInterface
+class DoctrineSectionCreator extends Doctrine implements CreateSectionInterface
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
     public function __construct(
-        EntityManagerInterface $entityManager
+        Registry $registry,
+        EntityManagerInterface $entityManager = null
     ) {
+        // This allows for unit testing
         $this->entityManager = $entityManager;
+        parent::__construct($registry);
     }
 
+    /**
+     * @param CommonSectionInterface $data
+     * @throws NoEntityManagerFoundForSection
+     */
     public function save(CommonSectionInterface $data)
     {
+        $this->determineEntityManager(FullyQualifiedClassName::fromString(get_class($data)));
+
         $this->entityManager->persist($data);
         $this->entityManager->flush();
     }
 
+    /**
+     * @param CommonSectionInterface $data
+     * @throws NoEntityManagerFoundForSection
+     */
     public function persist(CommonSectionInterface $data)
     {
+        $this->determineEntityManager(FullyQualifiedClassName::fromString(get_class($data)));
+
         $this->entityManager->persist($data);
     }
 
-    public function flush()
+    public function flush(): void
     {
+        // This assumes the entity managers has been determined before
+        // by calling persist before flushing.
         $this->entityManager->flush();
     }
 }

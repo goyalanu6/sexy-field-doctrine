@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tardigrades\SectionField\Service;
 
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM;
 use Tardigrades\SectionField\Generator\CommonSectionInterface;
 use Tardigrades\SectionField\ValueObject\SectionConfig;
@@ -25,14 +26,11 @@ use Tardigrades\SectionField\ValueObject\SectionConfig;
  * ::buildQuery and ::makeNested are public methods, to be used for more advanced behavior, like caching or
  * added query components.
  */
-class FetchFieldsDoctrineSectionReader implements ReadSectionInterface
+class FetchFieldsDoctrineSectionReader extends Doctrine implements ReadSectionInterface
 {
-    /** @var ORM\EntityManagerInterface */
-    private $entityManager;
-
-    public function __construct(ORM\EntityManagerInterface $entityManager)
+    public function __construct(Registry $registry)
     {
-        $this->entityManager = $entityManager;
+        parent::__construct($registry);
     }
 
     /**
@@ -40,6 +38,7 @@ class FetchFieldsDoctrineSectionReader implements ReadSectionInterface
      * @param SectionConfig|null $sectionConfig
      * @return \ArrayIterator
      * @throws EntryNotFoundException
+     * @throws NoEntityManagerFoundForSection
      */
     public function read(ReadOptionsInterface $options, SectionConfig $sectionConfig = null): \ArrayIterator
     {
@@ -61,6 +60,7 @@ class FetchFieldsDoctrineSectionReader implements ReadSectionInterface
      * @param ReadOptionsInterface $options
      * @return \ArrayIterator
      * @throws EntryNotFoundException
+     * @throws NoEntityManagerFoundForSection
      */
     public function readNested(ReadOptionsInterface $options): \ArrayIterator
     {
@@ -81,9 +81,13 @@ class FetchFieldsDoctrineSectionReader implements ReadSectionInterface
      * Returns a QueryBuilder that can be used to further enhance the query.
      * @param ReadOptionsInterface $readOptions
      * @return ORM\QueryBuilder
+     * @throws NoEntityManagerFoundForSection
      */
     public function buildQuery(ReadOptionsInterface $readOptions): ORM\QueryBuilder
     {
+        $section = $readOptions->getSection()[0];
+        $this->determineEntityManager($section);
+
         $options = $readOptions->toArray();
         $builder = $this->entityManager->createQueryBuilder();
 

@@ -3,12 +3,12 @@ declare (strict_types=1);
 
 namespace Tardigrades\SectionField\Service;
 
+use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use Tardigrades\SectionField\ValueObject\FullyQualifiedClassName;
-use Tardigrades\SectionField\ValueObject\Id;
 
 /**
  * @coversDefaultClass Tardigrades\SectionField\Service\DoctrineSectionCreator
@@ -21,9 +21,13 @@ final class DoctrineSectionCreatorTest extends TestCase
     /** @var EntityManagerInterface|Mockery\Mock */
     private $entityManager;
 
+    /** @var Registry|Mockery\MockInterface */
+    private $registry;
+
     public function setUp()
     {
         $this->entityManager = Mockery::mock(EntityManagerInterface::class);
+        $this->registry = Mockery::mock(Registry::class);
     }
 
     /**
@@ -32,7 +36,7 @@ final class DoctrineSectionCreatorTest extends TestCase
      */
     public function it_creates()
     {
-        $section = new DoctrineSectionCreator($this->entityManager);
+        $section = new DoctrineSectionCreator($this->registry);
         $this->assertInstanceOf(DoctrineSectionCreator::class, $section);
     }
 
@@ -42,11 +46,11 @@ final class DoctrineSectionCreatorTest extends TestCase
      */
     public function it_saves()
     {
-        $className = FullyQualifiedClassName::fromString('I am qualified! In a Class!');
-        $id = Id::fromInt(2222);
         $data = Mockery::mock('alias:Tardigrades\SectionField\Generator\CommonSectionInterface')->makePartial();
 
-        $section = new DoctrineSectionCreator($this->entityManager);
+        $section = new DoctrineSectionCreator($this->registry);
+
+        $this->givenWeHaveAValidEntityAssignedToAManager();
 
         $this->entityManager->shouldReceive('persist')
             ->once()
@@ -64,11 +68,11 @@ final class DoctrineSectionCreatorTest extends TestCase
      */
     public function it_persists()
     {
-        $className = FullyQualifiedClassName::fromString('I am qualified! In a Class!');
-        $id = Id::fromInt(2222);
         $data = Mockery::mock('alias:Tardigrades\SectionField\Generator\CommonSectionInterface')->makePartial();
 
-        $section = new DoctrineSectionCreator($this->entityManager);
+        $section = new DoctrineSectionCreator($this->registry);
+
+        $this->givenWeHaveAValidEntityAssignedToAManager();
 
         $this->entityManager->shouldReceive('persist')
             ->once()
@@ -86,11 +90,32 @@ final class DoctrineSectionCreatorTest extends TestCase
      */
     public function it_flushes()
     {
-        $section = new DoctrineSectionCreator($this->entityManager);
-
-        $this->entityManager->shouldReceive('flush')
+        $section = new DoctrineSectionCreator(
+            $this->registry,
+            $this->entityManager
+        );
+        $this->entityManager
+            ->shouldReceive('flush')
             ->once();
 
         $section->flush();
+    }
+
+    private function givenWeHaveAValidEntityAssignedToAManager()
+    {
+        $configuration = Mockery::mock(Configuration::class);
+        $configuration->shouldReceive('getEntityNamespaces')
+            ->once()
+            ->andReturn(['Tardigrades\SectionField\Generator\CommonSectionInterface']);
+
+        $this->entityManager->shouldReceive('getConfiguration')
+            ->once()
+            ->andReturn($configuration);
+
+        $this->registry->shouldReceive('getManagers')
+            ->once()
+            ->andReturn([
+                $this->entityManager
+            ]);
     }
 }
