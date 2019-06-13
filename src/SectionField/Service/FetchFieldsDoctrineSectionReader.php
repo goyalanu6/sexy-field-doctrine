@@ -51,7 +51,9 @@ class FetchFieldsDoctrineSectionReader extends Doctrine implements ReadSectionIn
 
     public function flush(): void
     {
-        $this->entityManager->flush();
+        if (!is_null($this->entityManager)) {
+            $this->entityManager->flush();
+        }
     }
 
     /**

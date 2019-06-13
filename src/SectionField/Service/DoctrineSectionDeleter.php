@@ -63,6 +63,8 @@ class DoctrineSectionDeleter extends Doctrine implements DeleteSectionInterface
     {
         // This assumes the entity managers has been determined before
         // by calling remove before flushing.
-        $this->entityManager->flush();
+        if (!is_null($this->entityManager)) {
+            $this->entityManager->flush();
+        }
     }
 }

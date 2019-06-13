@@ -137,7 +137,9 @@ class DoctrineSectionReader extends Doctrine implements ReadSectionInterface
     {
         // This assumes the entity managers has been determined before
         // by calling persist before flushing.
-        $this->entityManager->flush();
+        if (!is_null($this->entityManager)) {
+            $this->entityManager->flush();
+        }
     }
 
     /**
