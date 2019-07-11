@@ -528,6 +528,7 @@ class DoctrineSectionReader extends Doctrine implements ReadSectionInterface
      */
     private function manualQuery(ReadOptionsInterface $readOptions): \ArrayIterator
     {
+        $this->determineEntityManager();
         $query = $readOptions->getQuery();
         $query = $this->entityManager->createQuery($query);
 
