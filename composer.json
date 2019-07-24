@@ -14,8 +14,8 @@
     "php": "^7.1",
     "doctrine/orm": "^2.5.6",
     "symfony/dependency-injection": "^4",
-    "symfony/yaml": "^3.3.2",
-    "symfony/config": "^3.3.2"
+    "symfony/yaml": "^4",
+    "symfony/config": "^4"
   },
   "autoload": {
     "psr-4": {
