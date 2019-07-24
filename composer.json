@@ -13,7 +13,7 @@
   "require": {
     "php": "^7.1",
     "doctrine/orm": "^2.5.6",
-    "symfony/dependency-injection": "^3.3.2",
+    "symfony/dependency-injection": "^4",
     "symfony/yaml": "^3.3.2",
     "symfony/config": "^3.3.2"
   },
@@ -23,7 +23,7 @@
     }
   },
   "require-dev": {
-    "tardigrades/sexy-field": "dev-master",
+    "tardigrades/sexy-field": "dev-sym-4.x",
     "doctrine/doctrine-bundle": "^1.6",
     "phpunit/phpunit": "^6.1",
     "squizlabs/PHP_CodeSniffer": "^3.1",
