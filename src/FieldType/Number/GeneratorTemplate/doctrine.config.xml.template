@@ -1,1 +1,1 @@
-<field name="{{ handle }}" nullable="true" type="float" {{ unique }}/>
+<field name="{{ handle }}" nullable="{{ nullable }}" type="float" unique="{{ unique }}"/>
