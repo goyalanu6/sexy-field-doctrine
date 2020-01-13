@@ -149,7 +149,7 @@ final class DoctrineManyToManyGeneratorTest extends TestCase
     </cascade>
     <join-table name="mappers_37_thats_123">
         <join-columns>
-            <join-column name="mapper_37_id" referenced-column-name="id" />
+            <join-column name="mapper_37_id" referenced-column-name="id" nullable="true" unique="false" />
         </join-columns>
         <inverse-join-columns>
             <join-column name="that_123_id" referenced-column-name="id" />
@@ -349,7 +349,7 @@ EOT;
     </cascade>
     <join-table name="mappers_37_thats_123">
         <join-columns>
-            <join-column name="mapper_37_id" referenced-column-name="id" />
+            <join-column name="mapper_37_id" referenced-column-name="id" nullable="true" unique="false" />
         </join-columns>
         <inverse-join-columns>
             <join-column name="that_123_id" referenced-column-name="id" />
@@ -452,7 +452,218 @@ EOT;
 <many-to-many field="aliases_123" target-entity="nameFromSpace\Entity\ToBeMapped" inversed-by="mappers_37">
     <join-table name="mappers_37_aliases_123">
         <join-columns>
-            <join-column name="mapper_37_id" referenced-column-name="id" />
+            <join-column name="mapper_37_id" referenced-column-name="id" nullable="true" unique="false" />
+        </join-columns>
+        <inverse-join-columns>
+            <join-column name="that_123_id" referenced-column-name="id" />
+        </inverse-join-columns>
+    </join-table>
+</many-to-many>
+
+EOT;
+
+        $this->assertNotEmpty($generated);
+        $this->assertInstanceOf(Template::class, $generated);
+        $this->assertSame($expected, (string) $generated);
+    }
+
+    /**
+     * @test
+     * @covers ::generate
+     */
+    public function it_can_handle_nullable_and_unique_set_to_true()
+    {
+        $fieldArrayThing = [
+            'field' =>
+                [
+                    'name' => 'iets',
+                    'handle' => 'some handle',
+                    'kind' => DoctrineManyToManyGenerator::KIND,
+                    'relationship-type' => 'bidirectional',
+                    'owner' => true,
+                    'from' => 'this',
+                    'to' => 'that',
+                    'as' => 'alias',
+                    'type' => 'my type',
+                    'nullable' => true,
+                    'unique' => true
+                ]
+        ];
+        $fieldConfig = FieldConfig::fromArray($fieldArrayThing);
+
+        $field = Mockery::mock(new Field())
+            ->shouldDeferMissing()
+            ->shouldReceive('getConfig')
+            ->andReturn($fieldConfig)
+            ->getMock();
+
+        $doctrineSectionManager = Mockery::mock(SectionManagerInterface::class);
+        $fromSectionInterface = Mockery::mock(SectionInterface::class);
+        $toSectionInterface = Mockery::mock(SectionInterface::class);
+
+        $doctrineSectionManager->shouldReceive('readByHandle')
+            ->once()
+            ->andReturn($fromSectionInterface);
+
+        $doctrineSectionManager->shouldReceive('readByHandle')
+            ->once()
+            ->andReturn($toSectionInterface);
+
+        $fromSectionInterface->shouldReceive('getVersion')
+            ->twice()
+            ->andReturn(Version::fromInt(37));
+
+        $toSectionInterface->shouldReceive('getVersion')
+            ->twice()
+            ->andReturn(Version::fromInt(123));
+
+        $toSectionConfig =
+            SectionConfig::fromArray(
+                [
+                    'section' => [
+                        'name' => 'nameTo',
+                        'handle' => 'ToBeMapped',
+                        'fields' => ['a', 'b'],
+                        'default' => 'default',
+                        'namespace' => 'nameFromSpace'
+                    ]
+                ]
+            );
+
+        $toSectionInterface->shouldReceive('getConfig')
+            ->once()
+            ->andReturn($toSectionConfig);
+
+        $options = [
+            'sectionManager' => $doctrineSectionManager,
+            'sectionConfig' => SectionConfig::fromArray([
+                'section' => [
+                    'name' => 'iets',
+                    'handle' => 'mapper',
+                    'fields' => ['a', 'v', 'b'],
+                    'default' => 'def',
+                    'namespace' => 'nameInSpace'
+                ]
+            ])
+        ];
+
+        $generated = DoctrineManyToManyGenerator::generate(
+            $field,
+            TemplateDir::fromString('src/FieldType/Relationship'),
+            $options
+        );
+
+        $expected = <<<'EOT'
+<many-to-many field="aliases_123" target-entity="nameFromSpace\Entity\ToBeMapped" inversed-by="mappers_37">
+    <join-table name="mappers_37_aliases_123">
+        <join-columns>
+            <join-column name="mapper_37_id" referenced-column-name="id" nullable="true" unique="true" />
+        </join-columns>
+        <inverse-join-columns>
+            <join-column name="that_123_id" referenced-column-name="id" />
+        </inverse-join-columns>
+    </join-table>
+</many-to-many>
+
+EOT;
+
+        $this->assertNotEmpty($generated);
+        $this->assertInstanceOf(Template::class, $generated);
+        $this->assertSame($expected, (string) $generated);
+    }
+
+
+    /**
+     * @test
+     * @covers ::generate
+     */
+    public function it_can_handle_nullable_and_unique_set_to_false()
+    {
+        $fieldArrayThing = [
+            'field' =>
+                [
+                    'name' => 'iets',
+                    'handle' => 'some handle',
+                    'kind' => DoctrineManyToManyGenerator::KIND,
+                    'relationship-type' => 'bidirectional',
+                    'owner' => true,
+                    'from' => 'this',
+                    'to' => 'that',
+                    'as' => 'alias',
+                    'type' => 'my type',
+                    'nullable' => false,
+                    'unique' => false
+                ]
+        ];
+        $fieldConfig = FieldConfig::fromArray($fieldArrayThing);
+
+        $field = Mockery::mock(new Field())
+            ->shouldDeferMissing()
+            ->shouldReceive('getConfig')
+            ->andReturn($fieldConfig)
+            ->getMock();
+
+        $doctrineSectionManager = Mockery::mock(SectionManagerInterface::class);
+        $fromSectionInterface = Mockery::mock(SectionInterface::class);
+        $toSectionInterface = Mockery::mock(SectionInterface::class);
+
+        $doctrineSectionManager->shouldReceive('readByHandle')
+            ->once()
+            ->andReturn($fromSectionInterface);
+
+        $doctrineSectionManager->shouldReceive('readByHandle')
+            ->once()
+            ->andReturn($toSectionInterface);
+
+        $fromSectionInterface->shouldReceive('getVersion')
+            ->twice()
+            ->andReturn(Version::fromInt(37));
+
+        $toSectionInterface->shouldReceive('getVersion')
+            ->twice()
+            ->andReturn(Version::fromInt(123));
+
+        $toSectionConfig =
+            SectionConfig::fromArray(
+                [
+                    'section' => [
+                        'name' => 'nameTo',
+                        'handle' => 'ToBeMapped',
+                        'fields' => ['a', 'b'],
+                        'default' => 'default',
+                        'namespace' => 'nameFromSpace'
+                    ]
+                ]
+            );
+
+        $toSectionInterface->shouldReceive('getConfig')
+            ->once()
+            ->andReturn($toSectionConfig);
+
+        $options = [
+            'sectionManager' => $doctrineSectionManager,
+            'sectionConfig' => SectionConfig::fromArray([
+                'section' => [
+                    'name' => 'iets',
+                    'handle' => 'mapper',
+                    'fields' => ['a', 'v', 'b'],
+                    'default' => 'def',
+                    'namespace' => 'nameInSpace'
+                ]
+            ])
+        ];
+
+        $generated = DoctrineManyToManyGenerator::generate(
+            $field,
+            TemplateDir::fromString('src/FieldType/Relationship'),
+            $options
+        );
+
+        $expected = <<<'EOT'
+<many-to-many field="aliases_123" target-entity="nameFromSpace\Entity\ToBeMapped" inversed-by="mappers_37">
+    <join-table name="mappers_37_aliases_123">
+        <join-columns>
+            <join-column name="mapper_37_id" referenced-column-name="id" nullable="false" unique="false" />
         </join-columns>
         <inverse-join-columns>
             <join-column name="that_123_id" referenced-column-name="id" />

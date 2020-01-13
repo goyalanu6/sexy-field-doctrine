@@ -7,5 +7,5 @@ if ($type === 'bidirectional') {
         <cascade-<?php echo $cascade; ?> />
     </cascade>
 <?php } ?>
-    <join-column name="<?php echo $toHandle; ?>_id" referenced-column-name="id" />
+    <join-column name="<?php echo $toHandle; ?>_id" referenced-column-name="id" nullable="<?php echo $nullable ?>" unique="<?php echo $unique ?>" />
 </many-to-one>

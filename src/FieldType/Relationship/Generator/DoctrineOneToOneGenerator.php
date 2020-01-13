@@ -43,6 +43,16 @@ class DoctrineOneToOneGenerator implements GeneratorInterface
         /** @var SectionConfig $sectionConfig */
         $sectionConfig = $options[0]['sectionConfig'];
 
+        $unique = false;
+        if (isset($fieldConfig['field']['unique'])) {
+            $unique = $fieldConfig['field']['unique'];
+        }
+
+        $nullable = true;
+        if (isset($fieldConfig['field']['nullable'])) {
+            $nullable = $fieldConfig['field']['nullable'];
+        }
+
         if ($fieldConfig['field']['kind'] === self::KIND) {
 
             /** @var SectionInterface $from */
@@ -65,7 +75,9 @@ class DoctrineOneToOneGenerator implements GeneratorInterface
                         'fromHandle' => $sectionConfig->getHandle() . $fromVersion,
                         'fromFullyQualifiedClassName' => $sectionConfig->getFullyQualifiedClassName(),
                         'toHandle' => $toHandle . $toVersion,
-                        'cascade' => $fieldConfig['field']['cascade'] ?? false
+                        'cascade' => $fieldConfig['field']['cascade'] ?? false,
+                        'unique' => $unique ? 'true' : 'false',
+                        'nullable' => $nullable ? 'true' : 'false',
                     ]
                 )
             );

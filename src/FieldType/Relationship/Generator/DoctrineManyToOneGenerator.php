@@ -38,6 +38,16 @@ class DoctrineManyToOneGenerator implements GeneratorInterface
         /** @var SectionConfig $sectionConfig */
         $sectionConfig = $options[0]['sectionConfig'];
 
+        $unique = false;
+        if (isset($fieldConfig['field']['unique'])) {
+            $unique = $fieldConfig['field']['unique'];
+        }
+
+        $nullable = true;
+        if (isset($fieldConfig['field']['nullable'])) {
+            $nullable = $fieldConfig['field']['nullable'];
+        }
+
         if ($fieldConfig['field']['kind'] === self::KIND) {
             $handle = $sectionConfig->getHandle();
             $from = $sectionManager->readByHandle($handle);
@@ -57,7 +67,9 @@ class DoctrineManyToOneGenerator implements GeneratorInterface
                         'toHandle' => $toHandle . $toVersion,
                         'toFullyQualifiedClassName' => $to->getConfig()->getFullyQualifiedClassName(),
                         'fromPluralHandle' => Inflector::pluralize((string) $handle) . $fromVersion,
-                        'cascade' => $fieldConfig['field']['cascade'] ?? false
+                        'cascade' => $fieldConfig['field']['cascade'] ?? false,
+                        'unique' => $unique ? 'true' : 'false',
+                        'nullable' => $nullable ? 'true' : 'false',
                     ]
                 )
             );

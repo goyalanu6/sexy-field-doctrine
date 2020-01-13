@@ -49,6 +49,16 @@ class DoctrineManyToManyGenerator implements GeneratorInterface
             $fromVersion = $from->getVersion()->toInt() > 1 ? ('_' . $from->getVersion()->toInt()) : '';
             $toVersion = $to->getVersion()->toInt() > 1 ? ('_' . $to->getVersion()->toInt()) : '';
 
+            $unique = false;
+            if (isset($fieldConfig['field']['unique'])) {
+                $unique = $fieldConfig['field']['unique'];
+            }
+
+            $nullable = true;
+            if (isset($fieldConfig['field']['nullable'])) {
+                $nullable = $fieldConfig['field']['nullable'];
+            }
+
             $fromHandle = $fieldConfig['field']['from-handle'] ?? $handle;
             return Template::create(
                 TemplateLoader::load(
@@ -69,7 +79,9 @@ class DoctrineManyToManyGenerator implements GeneratorInterface
                         'fromFullyQualifiedClassName' => $sectionConfig
                             ->getFullyQualifiedClassName(),
                         'toHandle' => $fieldConfig['field']['to'] . $toVersion,
-                        'cascade' => $fieldConfig['field']['cascade'] ?? false
+                        'cascade' => $fieldConfig['field']['cascade'] ?? false,
+                        'unique' => $unique ? 'true' : 'false',
+                        'nullable' => $nullable ? 'true' : 'false',
                     ]
                 )
             );
