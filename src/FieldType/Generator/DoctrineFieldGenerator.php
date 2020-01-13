@@ -58,7 +58,6 @@ class DoctrineFieldGenerator implements GeneratorInterface
                 $generatorConfig = $sectionConfig->getGeneratorConfig()->toArray();
 
                 // If the key exists, it means it's overridden in the section config.
-                // So let's do it again, set it to true.
                 if (array_key_exists($fieldKey, $generatorConfig['doctrine'][(string)$field->getConfig()->getHandle()])) {
                     $doctrineFields[$fieldKey] = $generatorConfig['doctrine'][(string)$field->getConfig()->getHandle()][$fieldKey];
                 }
