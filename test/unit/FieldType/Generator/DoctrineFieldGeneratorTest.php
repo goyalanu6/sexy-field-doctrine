@@ -27,7 +27,7 @@ final class DoctrineFieldGeneratorTest extends TestCase
         'src/FieldType/ConfigurationOverride',
         'src/FieldType/Country',
         'src/FieldType/DateTime',
-        'src/FieldType/DateTimeTimeZone',
+        'src/FieldType/DateTimeTimezone',
         'src/FieldType/Email',
         'src/FieldType/Integer',
         'src/FieldType/Number',
@@ -51,7 +51,7 @@ final class DoctrineFieldGeneratorTest extends TestCase
             "src/FieldType/ConfigurationOverride" =>  "<field name=\"niets\" nullable=\"true\" type=\"string\" unique=\"false\" />\n",
             "src/FieldType/Country" =>  "<field name=\"niets\" nullable=\"true\" type=\"string\" unique=\"false\" />\n",
             "src/FieldType/DateTime" =>  "<field name=\"niets\" nullable=\"true\" type=\"datetime\" unique=\"false\"/>\n",
-            "src/FieldType/DateTimeTimeZone" =>  "<field name=\"niets\" nullable=\"true\" type=\"datetime\" unique=\"false\"/>
+            "src/FieldType/DateTimeTimezone" =>  "<field name=\"niets\" nullable=\"true\" type=\"datetime\" unique=\"false\"/>
 <field name=\"nietsTimezone\" nullable=\"true\" type=\"string\" />\n",
             "src/FieldType/Email" =>  "<field name=\"niets\" nullable=\"true\" type=\"string\" unique=\"false\"/>\n",
             "src/FieldType/Integer" =>  "<field name=\"niets\" nullable=\"true\" type=\"integer\" unique=\"false\"/>\n",
@@ -103,7 +103,7 @@ final class DoctrineFieldGeneratorTest extends TestCase
             "src/FieldType/ConfigurationOverride" =>  "<field name=\"niets\" nullable=\"false\" type=\"string\" unique=\"false\" />\n",
             "src/FieldType/Country" =>  "<field name=\"niets\" nullable=\"false\" type=\"string\" unique=\"false\" />\n",
             "src/FieldType/DateTime" =>  "<field name=\"niets\" nullable=\"false\" type=\"datetime\" unique=\"false\"/>\n",
-            "src/FieldType/DateTimeTimeZone" =>  "<field name=\"niets\" nullable=\"false\" type=\"datetime\" unique=\"false\"/>
+            "src/FieldType/DateTimeTimezone" =>  "<field name=\"niets\" nullable=\"false\" type=\"datetime\" unique=\"false\"/>
 <field name=\"nietsTimezone\" nullable=\"false\" type=\"string\" />\n",
             "src/FieldType/Email" =>  "<field name=\"niets\" nullable=\"false\" type=\"string\" unique=\"false\"/>\n",
             "src/FieldType/Integer" =>  "<field name=\"niets\" nullable=\"false\" type=\"integer\" unique=\"false\"/>\n",
@@ -161,7 +161,7 @@ final class DoctrineFieldGeneratorTest extends TestCase
             "src/FieldType/ConfigurationOverride" =>  "<field name=\"niets\" nullable=\"true\" type=\"string\" unique=\"false\" />\n",
             "src/FieldType/Country" =>  "<field name=\"niets\" nullable=\"true\" type=\"string\" unique=\"false\" />\n",
             "src/FieldType/DateTime" =>  "<field name=\"niets\" nullable=\"true\" type=\"datetime\" unique=\"false\"/>\n",
-            "src/FieldType/DateTimeTimeZone" =>  "<field name=\"niets\" nullable=\"true\" type=\"datetime\" unique=\"false\"/>
+            "src/FieldType/DateTimeTimezone" =>  "<field name=\"niets\" nullable=\"true\" type=\"datetime\" unique=\"false\"/>
 <field name=\"nietsTimezone\" nullable=\"true\" type=\"string\" />\n",
             "src/FieldType/Email" =>  "<field name=\"niets\" nullable=\"true\" type=\"string\" unique=\"false\"/>\n",
             "src/FieldType/Integer" =>  "<field name=\"niets\" nullable=\"true\" type=\"integer\" unique=\"false\"/>\n",
@@ -218,7 +218,7 @@ final class DoctrineFieldGeneratorTest extends TestCase
             "src/FieldType/ConfigurationOverride" =>  "<field name=\"niets\" nullable=\"false\" type=\"string\" unique=\"false\" />\n",
             "src/FieldType/Country" =>  "<field name=\"niets\" nullable=\"false\" type=\"string\" unique=\"false\" />\n",
             "src/FieldType/DateTime" =>  "<field name=\"niets\" nullable=\"false\" type=\"datetime\" unique=\"false\"/>\n",
-            "src/FieldType/DateTimeTimeZone" =>  "<field name=\"niets\" nullable=\"false\" type=\"datetime\" unique=\"false\"/>
+            "src/FieldType/DateTimeTimezone" =>  "<field name=\"niets\" nullable=\"false\" type=\"datetime\" unique=\"false\"/>
 <field name=\"nietsTimezone\" nullable=\"false\" type=\"string\" />\n",
             "src/FieldType/Email" =>  "<field name=\"niets\" nullable=\"false\" type=\"string\" unique=\"false\"/>\n",
             "src/FieldType/Integer" =>  "<field name=\"niets\" nullable=\"false\" type=\"integer\" unique=\"false\"/>\n",
@@ -276,7 +276,7 @@ final class DoctrineFieldGeneratorTest extends TestCase
             "src/FieldType/ConfigurationOverride" =>  "<field name=\"niets\" nullable=\"true\" type=\"string\" unique=\"true\" />\n",
             "src/FieldType/Country" =>  "<field name=\"niets\" nullable=\"true\" type=\"string\" unique=\"true\" />\n",
             "src/FieldType/DateTime" =>  "<field name=\"niets\" nullable=\"true\" type=\"datetime\" unique=\"true\"/>\n",
-            "src/FieldType/DateTimeTimeZone" =>  "<field name=\"niets\" nullable=\"true\" type=\"datetime\" unique=\"true\"/>
+            "src/FieldType/DateTimeTimezone" =>  "<field name=\"niets\" nullable=\"true\" type=\"datetime\" unique=\"true\"/>
 <field name=\"nietsTimezone\" nullable=\"true\" type=\"string\" />\n",
             "src/FieldType/Email" =>  "<field name=\"niets\" nullable=\"true\" type=\"string\" unique=\"true\"/>\n",
             "src/FieldType/Integer" =>  "<field name=\"niets\" nullable=\"true\" type=\"integer\" unique=\"true\"/>\n",
@@ -334,7 +334,7 @@ final class DoctrineFieldGeneratorTest extends TestCase
             "src/FieldType/ConfigurationOverride" =>  "<field name=\"niets\" nullable=\"true\" type=\"string\" unique=\"true\" />\n",
             "src/FieldType/Country" =>  "<field name=\"niets\" nullable=\"true\" type=\"string\" unique=\"true\" />\n",
             "src/FieldType/DateTime" =>  "<field name=\"niets\" nullable=\"true\" type=\"datetime\" unique=\"true\"/>\n",
-            "src/FieldType/DateTimeTimeZone" =>  "<field name=\"niets\" nullable=\"true\" type=\"datetime\" unique=\"true\"/>
+            "src/FieldType/DateTimeTimezone" =>  "<field name=\"niets\" nullable=\"true\" type=\"datetime\" unique=\"true\"/>
 <field name=\"nietsTimezone\" nullable=\"true\" type=\"string\" />\n",
             "src/FieldType/Email" =>  "<field name=\"niets\" nullable=\"true\" type=\"string\" unique=\"true\"/>\n",
             "src/FieldType/Integer" =>  "<field name=\"niets\" nullable=\"true\" type=\"integer\" unique=\"true\"/>\n",
