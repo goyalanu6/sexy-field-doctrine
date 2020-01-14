@@ -10,7 +10,7 @@
 <?php if (!($type === 'bidirectional' && !$owner)) { ?>
     <join-table name="<?php echo $fromPluralHandle . '_' . $toPluralHandle; ?>">
         <join-columns>
-            <join-column name="<?php echo $fromHandle; ?>_id" referenced-column-name="id" />
+            <join-column name="<?php echo $fromHandle; ?>_id" referenced-column-name="id" nullable="<?php echo $nullable ?>" unique="<?php echo $unique ?>" />
         </join-columns>
         <inverse-join-columns>
             <join-column name="<?php echo $toHandle; ?>_id" referenced-column-name="id" />

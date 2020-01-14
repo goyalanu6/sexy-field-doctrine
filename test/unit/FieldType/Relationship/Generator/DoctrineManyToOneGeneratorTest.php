@@ -142,7 +142,7 @@ class DoctrineManyToOneGeneratorTest extends TestCase
 
         $expected = <<<'EOT'
 <many-to-one field="that_123" target-entity="nameFromSpace\Entity\ToBeMapped" inversed-by="mappers_37">
-    <join-column name="that_123_id" referenced-column-name="id" />
+    <join-column name="that_123_id" referenced-column-name="id" nullable="true" unique="false" />
 </many-to-one>
 
 EOT;
@@ -240,7 +240,209 @@ EOT;
     <cascade>
         <cascade-delete />
     </cascade>
-    <join-column name="that_123_id" referenced-column-name="id" />
+    <join-column name="that_123_id" referenced-column-name="id" nullable="true" unique="false" />
+</many-to-one>
+
+EOT;
+
+        $this->assertNotEmpty($generated);
+        $this->assertInstanceOf(Template::class, $generated);
+        $this->assertSame($expected, (string)$generated);
+    }
+
+
+    /**
+     * @test
+     * @covers ::generate
+     */
+    public function it_generates_a_proper_template_with_nullable_and_unique_true()
+    {
+        $fieldArrayThing = [
+            'field' =>
+                [
+                    'name' => 'iets',
+                    'handle' => 'some handle',
+                    'kind' => DoctrineManyToOneGenerator::KIND,
+                    'relationship-type' => 'unidirectional',
+                    'from' => 'this',
+                    'to' => 'that',
+                    'type' => 'not my type',
+                    'cascade' => 'delete',
+                    'nullable' => true,
+                    'unique' => true
+                ]
+        ];
+        $fieldConfig = FieldConfig::fromArray($fieldArrayThing);
+
+        $field = Mockery::mock(new Field())
+            ->shouldDeferMissing()
+            ->shouldReceive('getConfig')
+            ->andReturn($fieldConfig)
+            ->getMock();
+
+        $doctrineSectionManager = Mockery::mock(SectionManagerInterface::class);
+        $fromSectionInterface = Mockery::mock(SectionInterface::class);
+        $toSectionInterface = Mockery::mock(SectionInterface::class);
+
+        $doctrineSectionManager->shouldReceive('readByHandle')
+            ->once()
+            ->andReturn($fromSectionInterface);
+
+        $doctrineSectionManager->shouldReceive('readByHandle')
+            ->once()
+            ->andReturn($toSectionInterface);
+
+        $fromSectionInterface->shouldReceive('getVersion')
+            ->twice()
+            ->andReturn(Version::fromInt(37));
+
+        $toSectionInterface->shouldReceive('getVersion')
+            ->twice()
+            ->andReturn(Version::fromInt(123));
+
+        $toSectionConfig =
+            SectionConfig::fromArray(
+                [
+                    'section' => [
+                        'name' => 'nameTo',
+                        'handle' => 'ToBeMapped',
+                        'fields' => ['a', 'b'],
+                        'default' => 'default',
+                        'namespace' => 'nameFromSpace'
+                    ]
+                ]
+            );
+
+        $toSectionInterface->shouldReceive('getConfig')
+            ->once()
+            ->andReturn($toSectionConfig);
+
+        $options = [
+            'sectionManager' => $doctrineSectionManager,
+            'sectionConfig' => SectionConfig::fromArray([
+                'section' => [
+                    'name' => 'iets',
+                    'handle' => 'mapper',
+                    'fields' => ['a', 'v', 'b'],
+                    'default' => 'def',
+                    'namespace' => 'nameInSpace'
+                ]
+            ])
+        ];
+
+        $generated = DoctrineManyToOneGenerator::generate(
+            $field,
+            TemplateDir::fromString('src/FieldType/Relationship'),
+            $options
+        );
+
+        $expected = <<<'EOT'
+<many-to-one field="that_123" target-entity="nameFromSpace\Entity\ToBeMapped">
+    <cascade>
+        <cascade-delete />
+    </cascade>
+    <join-column name="that_123_id" referenced-column-name="id" nullable="true" unique="true" />
+</many-to-one>
+
+EOT;
+
+        $this->assertNotEmpty($generated);
+        $this->assertInstanceOf(Template::class, $generated);
+        $this->assertSame($expected, (string)$generated);
+    }
+
+
+    /**
+     * @test
+     * @covers ::generate
+     */
+    public function it_generates_a_proper_template_with_nullable_and_unique_false()
+    {
+        $fieldArrayThing = [
+            'field' =>
+                [
+                    'name' => 'iets',
+                    'handle' => 'some handle',
+                    'kind' => DoctrineManyToOneGenerator::KIND,
+                    'relationship-type' => 'unidirectional',
+                    'from' => 'this',
+                    'to' => 'that',
+                    'type' => 'not my type',
+                    'cascade' => 'delete',
+                    'nullable' => false,
+                    'unique' => false
+                ]
+        ];
+        $fieldConfig = FieldConfig::fromArray($fieldArrayThing);
+
+        $field = Mockery::mock(new Field())
+            ->shouldDeferMissing()
+            ->shouldReceive('getConfig')
+            ->andReturn($fieldConfig)
+            ->getMock();
+
+        $doctrineSectionManager = Mockery::mock(SectionManagerInterface::class);
+        $fromSectionInterface = Mockery::mock(SectionInterface::class);
+        $toSectionInterface = Mockery::mock(SectionInterface::class);
+
+        $doctrineSectionManager->shouldReceive('readByHandle')
+            ->once()
+            ->andReturn($fromSectionInterface);
+
+        $doctrineSectionManager->shouldReceive('readByHandle')
+            ->once()
+            ->andReturn($toSectionInterface);
+
+        $fromSectionInterface->shouldReceive('getVersion')
+            ->twice()
+            ->andReturn(Version::fromInt(37));
+
+        $toSectionInterface->shouldReceive('getVersion')
+            ->twice()
+            ->andReturn(Version::fromInt(123));
+
+        $toSectionConfig =
+            SectionConfig::fromArray(
+                [
+                    'section' => [
+                        'name' => 'nameTo',
+                        'handle' => 'ToBeMapped',
+                        'fields' => ['a', 'b'],
+                        'default' => 'default',
+                        'namespace' => 'nameFromSpace'
+                    ]
+                ]
+            );
+
+        $toSectionInterface->shouldReceive('getConfig')
+            ->once()
+            ->andReturn($toSectionConfig);
+
+        $options = [
+            'sectionManager' => $doctrineSectionManager,
+            'sectionConfig' => SectionConfig::fromArray([
+                'section' => [
+                    'name' => 'iets',
+                    'handle' => 'mapper',
+                    'fields' => ['a', 'v', 'b'],
+                    'default' => 'def',
+                    'namespace' => 'nameInSpace'
+                ]
+            ])
+        ];
+
+        $generated = DoctrineManyToOneGenerator::generate(
+            $field,
+            TemplateDir::fromString('src/FieldType/Relationship'),
+            $options
+        );
+
+        $expected = <<<'EOT'
+<many-to-one field="that_123" target-entity="nameFromSpace\Entity\ToBeMapped">
+    <cascade>
+        <cascade-delete />
+    </cascade>
+    <join-column name="that_123_id" referenced-column-name="id" nullable="false" unique="false" />
 </many-to-one>
 
 EOT;

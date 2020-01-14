@@ -115,7 +115,7 @@ final class DoctrineConfigGeneratorTest extends TestCase
       <generator strategy="AUTO"/>
     </id>
     <one-to-one field="sectionTwo" target-entity="My\Namespace\Entity\SectionOne">
-      <join-column name="sectionTwo_id" referenced-column-name="id"/>
+      <join-column name="sectionTwo_id" referenced-column-name="id" nullable="false" unique="false"/>
     </one-to-one>
   </entity>
 </doctrine-mapping>
@@ -264,7 +264,8 @@ EOT;
                 'kind' => $kind,
                 'to' => 'section' . $to,
                 'relationship-type' => 'unidirectional',
-                'owner' => true
+                'owner' => true,
+                'nullable' => false
             ]
         ]);
 

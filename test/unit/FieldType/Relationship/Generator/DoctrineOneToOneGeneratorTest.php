@@ -156,7 +156,7 @@ final class DoctrineOneToOneGeneratorTest extends TestCase
     <cascade>
         <cascade-persist />
     </cascade>
-    <join-column name="you_333_id" referenced-column-name="id" />
+    <join-column name="you_333_id" referenced-column-name="id" nullable="true" unique="false" />
 </one-to-one>
 
 EOT;
@@ -347,7 +347,203 @@ EOT;
 
         $expected = <<<EOT
 <one-to-one field="you_333" target-entity="namespace\Entity\Handle">
-    <join-column name="you_333_id" referenced-column-name="id" />
+    <join-column name="you_333_id" referenced-column-name="id" nullable="true" unique="false" />
+</one-to-one>
+
+EOT;
+
+        $this->assertEquals($expected, (string)$generated);
+    }
+
+    /**
+     * @test
+     * @covers ::generate
+     */
+    public function it_should_generate_with_nullable_and_unique_true()
+    {
+        $fieldArrayThing = [
+            'field' =>
+                [
+                    'name' => 'iets',
+                    'handle' => 'some handle',
+                    'kind' => DoctrineOneToOneGenerator::KIND,
+                    'relationship-type' => 'unidirectional',
+                    'owner' => true,
+                    'from' => 'me',
+                    'to' => 'you',
+                    'type' => 'not my type',
+                    'nullable' => true,
+                    'unique' => true
+                ]
+        ];
+        $fieldConfig = FieldConfig::fromArray($fieldArrayThing);
+
+        $field = Mockery::mock(new Field())
+            ->shouldDeferMissing()
+            ->shouldReceive('getConfig')
+            ->andReturn($fieldConfig)
+            ->getMock();
+
+        $doctrineSectionManager = Mockery::mock(SectionManagerInterface::class);
+
+        $fromSectionInterface = Mockery::mock(SectionInterface::class);
+        $toSectionInterface = Mockery::mock(SectionInterface::class);
+
+        $doctrineSectionManager->shouldReceive('readByHandle')
+            ->once()
+            ->andReturn($fromSectionInterface);
+
+        $doctrineSectionManager->shouldReceive('readByHandle')
+            ->once()
+            ->andReturn($toSectionInterface);
+
+        $fromSectionInterface->shouldReceive('getVersion')
+            ->twice()
+            ->andReturn(Version::fromInt(37));
+
+        $toSectionInterface->shouldReceive('getVersion')
+            ->twice()
+            ->andReturn(Version::fromInt(333));
+
+        $toSectionConfig =
+            SectionConfig::fromArray(
+                [
+                    'section' => [
+                        'name' => 'nameTo',
+                        'handle' => 'handle',
+                        'fields' => ['a' => 'b'],
+                        'default' => 'default',
+                        'namespace' => 'namespace'
+                    ]
+                ]
+            );
+
+        $toSectionInterface->shouldReceive('getConfig')
+            ->once()
+            ->andReturn($toSectionConfig);
+
+        $options = [
+            'sectionManager' => $doctrineSectionManager,
+            'sectionConfig' => SectionConfig::fromArray([
+                'section' => [
+                    'name' => 'iets',
+                    'handle' => 'niets',
+                    'fields' => ['a' => 'v'],
+                    'default' => 'def',
+                    'namespace' => 'nameInSpace'
+                ]
+            ])
+        ];
+
+        $generated = DoctrineOneToOneGenerator::generate(
+            $field,
+            TemplateDir::fromString(__DIR__ . '/../../../../../src/FieldType/Relationship'),
+            $options
+        );
+
+        $this->assertInstanceOf(Template::class, $generated);
+
+        $expected = <<<EOT
+<one-to-one field="you_333" target-entity="namespace\Entity\Handle">
+    <join-column name="you_333_id" referenced-column-name="id" nullable="true" unique="true" />
+</one-to-one>
+
+EOT;
+
+        $this->assertEquals($expected, (string)$generated);
+    }
+
+    /**
+     * @test
+     * @covers ::generate
+     */
+    public function it_should_generate_with_nullable_and_unique_false()
+    {
+        $fieldArrayThing = [
+            'field' =>
+                [
+                    'name' => 'iets',
+                    'handle' => 'some handle',
+                    'kind' => DoctrineOneToOneGenerator::KIND,
+                    'relationship-type' => 'unidirectional',
+                    'owner' => true,
+                    'from' => 'me',
+                    'to' => 'you',
+                    'type' => 'not my type',
+                    'nullable' => false,
+                    'unique' => false
+                ]
+        ];
+        $fieldConfig = FieldConfig::fromArray($fieldArrayThing);
+
+        $field = Mockery::mock(new Field())
+            ->shouldDeferMissing()
+            ->shouldReceive('getConfig')
+            ->andReturn($fieldConfig)
+            ->getMock();
+
+        $doctrineSectionManager = Mockery::mock(SectionManagerInterface::class);
+
+        $fromSectionInterface = Mockery::mock(SectionInterface::class);
+        $toSectionInterface = Mockery::mock(SectionInterface::class);
+
+        $doctrineSectionManager->shouldReceive('readByHandle')
+            ->once()
+            ->andReturn($fromSectionInterface);
+
+        $doctrineSectionManager->shouldReceive('readByHandle')
+            ->once()
+            ->andReturn($toSectionInterface);
+
+        $fromSectionInterface->shouldReceive('getVersion')
+            ->twice()
+            ->andReturn(Version::fromInt(37));
+
+        $toSectionInterface->shouldReceive('getVersion')
+            ->twice()
+            ->andReturn(Version::fromInt(333));
+
+        $toSectionConfig =
+            SectionConfig::fromArray(
+                [
+                    'section' => [
+                        'name' => 'nameTo',
+                        'handle' => 'handle',
+                        'fields' => ['a' => 'b'],
+                        'default' => 'default',
+                        'namespace' => 'namespace'
+                    ]
+                ]
+            );
+
+        $toSectionInterface->shouldReceive('getConfig')
+            ->once()
+            ->andReturn($toSectionConfig);
+
+        $options = [
+            'sectionManager' => $doctrineSectionManager,
+            'sectionConfig' => SectionConfig::fromArray([
+                'section' => [
+                    'name' => 'iets',
+                    'handle' => 'niets',
+                    'fields' => ['a' => 'v'],
+                    'default' => 'def',
+                    'namespace' => 'nameInSpace'
+                ]
+            ])
+        ];
+
+        $generated = DoctrineOneToOneGenerator::generate(
+            $field,
+            TemplateDir::fromString(__DIR__ . '/../../../../../src/FieldType/Relationship'),
+            $options
+        );
+
+        $this->assertInstanceOf(Template::class, $generated);
+
+        $expected = <<<EOT
+<one-to-one field="you_333" target-entity="namespace\Entity\Handle">
+    <join-column name="you_333_id" referenced-column-name="id" nullable="false" unique="false" />
 </one-to-one>
 
 EOT;

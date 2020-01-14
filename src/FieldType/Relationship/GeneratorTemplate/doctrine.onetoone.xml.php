@@ -8,6 +8,6 @@ if ($type === 'bidirectional') {
     </cascade>
 <?php } ?>
 <?php if (!($type === 'bidirectional' && !$owner)) { ?>
-    <join-column name="<?php echo $toHandle; ?>_id" referenced-column-name="id" />
+    <join-column name="<?php echo $toHandle; ?>_id" referenced-column-name="id" nullable="<?php echo $nullable ?>" unique="<?php echo $unique ?>" />
 <?php } ?>
 </one-to-one>

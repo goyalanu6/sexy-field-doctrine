@@ -21,6 +21,10 @@ use Tardigrades\SectionField\ValueObject\SectionConfig;
 
 class DoctrineFieldGenerator implements GeneratorInterface
 {
+
+    private static $DOCTRINE_UNIQUE = 'unique';
+    private static $DOCTRINE_NULLABLE = 'nullable';
+
     public static function generate(FieldInterface $field, TemplateDir $templateDir, ...$options): Template
     {
         $asString = (string) TemplateLoader::load(
@@ -36,36 +40,39 @@ class DoctrineFieldGenerator implements GeneratorInterface
 
         $fieldConfig = $field->getConfig()->toArray();
 
-        $unique = false;
-        try {
-            $unique = $fieldConfig['field']['generator']['doctrine']['unique'];
-        } catch (\Exception $exception) {
-            // Unique not defined
-        }
+        $doctrineFields = [
+            self::$DOCTRINE_NULLABLE => true,
+            self::$DOCTRINE_UNIQUE => false
+        ];
 
-        try {
-            /** @var SectionConfig $sectionConfig */
-            $sectionConfig = $options[0]['sectionConfig'];
-            $generatorConfig = $sectionConfig->getGeneratorConfig()->toArray();
-
-            // If the key exists, it means it's overridden in the section config.
-            // So let's do it again, set it to true.
-            if (array_key_exists('unique', $generatorConfig['doctrine'][(string)$field->getHandle()])) {
-                $unique = true;
-                // unless it's set to false
-                if (!$generatorConfig['doctrine'][(string)$field->getHandle()]['unique']) {
-                    $unique = false;
-                }
+        foreach ($doctrineFields as $fieldKey => $value) {
+            try {
+                $doctrineFields[$fieldKey] = $fieldConfig['field']['generator']['doctrine'][$fieldKey];
+            } catch (\Exception $exception) {
+                // field not defined
             }
-        } catch (\Throwable $e) {
-            // The key did't exist at all
-        }
 
-        $asString = str_replace(
-            '{{ unique }}',
-            $unique ? 'unique="true" ' : '',
-            $asString
-        );
+            try {
+                /** @var SectionConfig $sectionConfig */
+                $sectionConfig = $options[0]['sectionConfig'];
+                $generatorConfig = $sectionConfig->getGeneratorConfig()->toArray();
+
+                // If the key exists, it means it's overridden in the section config.
+                if (array_key_exists($fieldKey, $generatorConfig['doctrine'][(string)$field->getConfig()->getHandle()])) {
+                    $doctrineFields[$fieldKey] = $generatorConfig['doctrine'][(string)$field->getConfig()->getHandle()][$fieldKey];
+                }
+            } catch (\Throwable $e) {
+                // The key did't exist at all
+            }
+
+            if (strpos($asString, "{{ $fieldKey }}") !== false) {
+                $asString = str_replace(
+                    "{{ $fieldKey }}",
+                    $doctrineFields[$fieldKey] === true ? 'true' : 'false',
+                    $asString
+                );
+            }
+        }
 
         return Template::create($asString);
     }
